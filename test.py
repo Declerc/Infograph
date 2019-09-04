@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout
+from PyQt5 import *
 app = QApplication([])
 window = QWidget()
 layout = QVBoxLayout()
