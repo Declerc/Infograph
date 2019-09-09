@@ -10,6 +10,7 @@ def alert():
 Fenetre = Tk()
 Fenetre.title("Infograph")
 Fenetre['bg'] = 'grey'
+Fenetre.geometry('1000x600+50+10')
 
 Menubar = Menu(Fenetre)
 
@@ -45,19 +46,9 @@ Menubar.add_cascade(label="Aide", menu=Menu5)
 Fenetre.config(menu=Menubar)
 
 fWidth= Fenetre.winfo_screenwidth()
-fHeight= Fenetre.winfo_screenheight()
-MenuBouton = Canvas(Fenetre, width=str(fWidth), height=25, background='white')
+MenuBouton = Canvas(Fenetre, width=fWidth, height=25, background='white')
 MenuBouton.pack(side = TOP)
 
-Canvas = Canvas(Fenetre, width=fWidth, height=fHeight, background="Grey")
-Canvas.pack(side = TOP)
-
-
-
-
-
-
-
-Fenetre.minsize(750,350)
+Fenetre.minsize(700,300)
 
 Fenetre.mainloop()
