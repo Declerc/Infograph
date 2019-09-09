@@ -5,11 +5,10 @@ from tkinter import *
 def alert():
     showinfo("alerte", "Ca marche !")
 
-fWidth= 750
-fHeight= 500
+
 
 Fenetre = Tk()
-Fenetre.geometry(str(fWidth) + "x" + str(fHeight))
+Fenetre.title("Infograph")
 Fenetre['bg'] = 'grey'
 
 Menubar = Menu(Fenetre)
@@ -45,17 +44,20 @@ Menubar.add_cascade(label="Aide", menu=Menu5)
 
 Fenetre.config(menu=Menubar)
 
-MenuBouton = Canvas(Fenetre, width=750 ,height=25, background='white')
-MenuBouton.pack()
+fWidth= Fenetre.winfo_screenwidth()
+fHeight= Fenetre.winfo_screenheight()
+MenuBouton = Canvas(Fenetre, width=str(fWidth), height=25, background='white')
+MenuBouton.pack(side = TOP)
 
-Canvas = Canvas(Fenetre, width=750, height=300, background="Grey")
-Canvas.pack()
-
-
-
-
+Canvas = Canvas(Fenetre, width=fWidth, height=fHeight, background="Grey")
+Canvas.pack(side = TOP)
 
 
-Fenetre.minsize(750,500)
+
+
+
+
+
+Fenetre.minsize(750,350)
 
 Fenetre.mainloop()
