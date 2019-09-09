@@ -1,21 +1,24 @@
 # coding: utf-8
  
 from tkinter import * 
-
+from tkinter import ttk
+import createGraph
 def alert():
     showinfo("alerte", "Ca marche !")
-
-
 
 Fenetre = Tk()
 Fenetre.title("Infograph")
 Fenetre['bg'] = 'grey'
-Fenetre.geometry('1000x600+50+10')
+Fenetre.geometry('1000x600')
+
+
+ 
+
 
 Menubar = Menu(Fenetre)
 
 Menu1 = Menu(Menubar, tearoff=0)
-Menu1.add_command(label="Créer", command=alert)
+Menu1.add_command(label="Créer", command=creat(nb))
 Menu1.add_command(label="Editer", command=alert)
 Menu1.add_separator()
 Menu1.add_command(label="Quitter", command=Fenetre.quit)
@@ -47,7 +50,7 @@ Fenetre.config(menu=Menubar)
 
 fWidth= Fenetre.winfo_screenwidth()
 MenuBouton = Canvas(Fenetre, width=fWidth, height=25, background='white')
-MenuBouton.pack(side = TOP)
+#MenuBouton.pack(side = TOP)
 
 Fenetre.minsize(700,300)
 
