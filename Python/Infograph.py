@@ -11,14 +11,16 @@ Fenetre.title("Infograph")
 Fenetre['bg'] = 'grey'
 Fenetre.geometry('1000x600')
 
+tabControl = ttk.Notebook(Fenetre)
+tabControl.grid(row=1, column=0, columnspan=50, rowspan=49, sticky='NESW')
+page = []
 
- 
 
 
 Menubar = Menu(Fenetre)
 
 Menu1 = Menu(Menubar, tearoff=0)
-Menu1.add_command(label="Créer", command=creat(nb))
+Menu1.add_command(label="Créer", command=createGraph.CreateTab(tabControl, page, i))
 Menu1.add_command(label="Editer", command=alert)
 Menu1.add_separator()
 Menu1.add_command(label="Quitter", command=Fenetre.quit)
