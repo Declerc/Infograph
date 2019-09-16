@@ -17,6 +17,7 @@ tabControl = ttk.Notebook(Fenetre)
 def CreateTab():
     TabName = ttk.Frame(tabControl)
     tabControl.add(TabName, text="1")
+    ttk.Label(TabName, text="This is Tab 1").grid(column=0, row=0, padx=10, pady=10)
 
 #<editor-fold desc="Creation menu">
 Menubar = Menu(Fenetre)
@@ -57,11 +58,11 @@ Menubar.add_cascade(label="Aide", menu=Menu5)
 Fenetre.config(menu=Menubar)
 # </editor-fold>)
 
-
+tabControl.pack(expand=1, fill="both")  # Pack to make visible
 fWidth = Fenetre.winfo_screenwidth()
 MenuBouton = Canvas(Fenetre, width=fWidth, height=25, background='white')
 # MenuBouton.pack(side = TOP)
-tabControl.grid(row=1,column=0,columnspan=4,padx=5)
+#tabControl.grid(row=1,column=0,columnspan=4,padx=5)
 Fenetre.minsize(700, 300)
 tabControl.mainloop()
 

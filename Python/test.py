@@ -1,26 +1,80 @@
 from tkinter import *
 from tkinter import ttk
-import math
-import sys
 
-myApp = Tk()
-myApp.title(" Program ")
-myApp.geometry("1000x1200")
+class App:
+    @property
+    def Width(self):
+        return self._width
+    @Width.setter
+    def Width(self, value):
+        self._width = value
+    @property
+    def Height(self):
+        return self._height
+    @Height.setter
+    def Height(self, value):
+        self._height = value
 
-tasktabs=ttk.Notebook(myApp)
+    def __init__(self, width, height):
+        self.Width = width
+        self.Height = height
+
+    def CreationMenu(self, Fenetre):
+        Menubar = Menu(Fenetre)
+        Menu1 = Menu(Menubar, tearoff=0)
+        Menu1.add_command(label="Créer", command=self.CreateTab)
+        Menu1.add_command(label="Editer")
+        Menu1.add_separator()
+        Menu1.add_command(label="Quitter", command=Fenetre.quit)
+        Menubar.add_cascade(label="Fichier", menu=Menu1)
+
+        Menu2 = Menu(Menubar, tearoff=0)
+
+        Menu2.add_command(label="Couper")
+        Menu2.add_command(label="Copier")
+        Menu2.add_command(label="Coller")
+        Menubar.add_cascade(label="Editer", menu=Menu2)
+
+        Menu3 = Menu(Menubar, tearoff=0)
+        Menu3.add_command(label="A propos")
+
+        Menubar.add_cascade(label="Fenêtre", menu=Menu3)
+
+        Menu4 = Menu(Menubar, tearoff=0)
+
+        Menu4.add_command(label="Bellman")
+        Menu4.add_command(label="Ford")
+        Menu4.add_command(label="Dijkstra")
+        Menu4.add_separator()
+        Menu4.add_command(label="Matrice")
+
+        Menubar.add_cascade(label="Algorithmes", menu=Menu4)
+
+        Menu5 = Menu(Menubar, tearoff=0)
+
+        Menu5.add_command(label="A propos")
+        Menubar.add_cascade(label="Aide", menu=Menu5)
+
+        Fenetre.config(menu=Menubar)
+
+    def CreateTab(self):
+        TabName = ttk.Frame(tabControl)
+        tabControl.add(TabName, text="1")
+        ttk.Label(TabName, text="This is Tab 1").grid(column=0, row=0, padx=10, pady=10)
+
+    def RunFenetre(self):
+        Fenetre = Tk()
+        Fenetre.title("Infograph")
+        Fenetre['bg'] = 'grey'
+        global tabControl       # Mettre en global pour etre reconnu dans createTab
+        tabControl = ttk.Notebook(Fenetre)
+        Fenetre.geometry("{}x{}".format(self._width, self._height))
+
+        self.CreationMenu(Fenetre)
+        tabControl.pack(expand=1, fill="both")  # Pack to make visible
+        Fenetre.mainloop()
 
 
-def AddNewWork():
 
-
-    TabName=ttk.Frame(tasktabs)
-    tasktabs.add(TabName,text="ie")
-
-
-AddWorkButton=Button(myApp,text=' Add ', command=AddNewWork)
-AddWorkButton.grid(row=0,column=4, sticky="W", padx=5, pady=5)
-
-
-tasktabs.grid(row=1,column=0,columnspan=4,padx=5)
-
-myApp.mainloop()
+app = App(1000, 1200)
+app.RunFenetre()
