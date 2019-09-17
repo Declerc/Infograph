@@ -2,6 +2,10 @@
 
 from tkinter import * 
 from tkinter import ttk
+import networkx as nx
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 import createGraph
 def alert():
     showinfo("alerte", "Ca marche !")
@@ -61,6 +65,27 @@ Fenetre.config(menu=Menubar)
 tabControl.pack(expand=1, fill="both")  # Pack to make visible
 fWidth = Fenetre.winfo_screenwidth()
 MenuBouton = Canvas(Fenetre, width=fWidth, height=25, background='white')
+
+graph = nx.DiGraph()
+graph.add_nodes_from('ABCDEFGH')
+graph.add_edges_from([
+    ('A', 'B', {'capacity': 4, 'flow': 0}),
+    ('A', 'C', {'capacity': 5, 'flow': 0}),
+    ('A', 'D', {'capacity': 7, 'flow': 0}),
+    ('B', 'E', {'capacity': 7, 'flow': 0}),
+    ('C', 'E', {'capacity': 6, 'flow': 0}),
+    ('C', 'F', {'capacity': 4, 'flow': 0}),
+    ('C', 'G', {'capacity': 1, 'flow': 0}),
+    ('D', 'F', {'capacity': 8, 'flow': 0}),
+    ('D', 'G', {'capacity': 1, 'flow': 0}),
+    ('E', 'H', {'capacity': 7, 'flow': 0}),
+    ('F', 'H', {'capacity': 6, 'flow': 0}),
+    ('G', 'H', {'capacity': 4, 'flow': 0}),
+
+])
+
+
+
 # MenuBouton.pack(side = TOP)
 #tabControl.grid(row=1,column=0,columnspan=4,padx=5)
 Fenetre.minsize(700, 300)
