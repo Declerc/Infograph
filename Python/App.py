@@ -59,7 +59,7 @@ class App:
         Fenetre.config(menu=Menubar)
 
     def CreateTab(self):                #Fonction pour créer fenetre
-        TabName = ttk.Frame(tabControl)
+        TabName = ttk.Frame(tabControl, width=200, height=200)
         tabControl.add(TabName)
         ttk.Label(TabName, text="This is Tab {}".format(tabControl.index(TabName))).grid(column=0, row=0, padx=10, pady=10)
         tabControl.tab(TabName, text= tabControl.index(TabName)) #Affiche numéro tab dans titre
@@ -68,12 +68,22 @@ class App:
         Fenetre = Tk()
         Fenetre.title("Infograph")
         Fenetre['bg'] = 'grey'
-        global tabControl       # Mettre en global pour etre reconnu dans createTab
-        tabControl = ttk.Notebook(Fenetre)
+            # Mettre en global pour etre reconnu dans createTab
+
         Fenetre.geometry("{}x{}".format(self._width, self._height))
 
         self.CreationMenu(Fenetre)
+
+        Fenetre.update_idletasks()
+        w = Canvas(Fenetre, width=Fenetre.winfo_width(), height=Fenetre.winfo_height()).place(x= 0, y = 0)
+
+        x = Canvas(Fenetre, bg = "black", width = 100, height = 500)
+
+
+        print(Fenetre.winfo_width(), Fenetre.winfo_height())
+        x.pack(side=RIGHT)
+        global tabControl
+        tabControl = ttk.Notebook(w)
         tabControl.pack(expand=1, fill="both")  # Pack to make visible
+
         Fenetre.mainloop()
-
-
