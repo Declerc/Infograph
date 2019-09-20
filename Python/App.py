@@ -1,12 +1,13 @@
 from tkinter import *
 from tkinter import ttk
 
+
 class App:
-    @property
+    @property   #Getter Setter
     def Width(self):
         return self._width
     @Width.setter
-    def Width(self, value):
+    def Width(self,value):
         self._width = value
     @property
     def Height(self):
@@ -15,7 +16,7 @@ class App:
     def Height(self, value):
         self._height = value
 
-    def __init__(self, width, height):
+    def __init__(self, width, height): #Constructeur
         self.Width = width
         self.Height = height
 
@@ -59,8 +60,9 @@ class App:
 
     def CreateTab(self):                #Fonction pour créer fenetre
         TabName = ttk.Frame(tabControl)
-        tabControl.add(TabName, text="1")
-        ttk.Label(TabName, text="This is Tab {}".format(tabControl.index(tabControl.select()))).grid(column=0, row=0, padx=10, pady=10)
+        tabControl.add(TabName)
+        ttk.Label(TabName, text="This is Tab {}".format(tabControl.index(TabName))).grid(column=0, row=0, padx=10, pady=10)
+        tabControl.tab(TabName, text= tabControl.index(TabName)) #Affiche numéro tab dans titre
 
     def RunFenetre(self):
         Fenetre = Tk()
@@ -76,5 +78,3 @@ class App:
 
 
 
-app = App(1000, 1200)
-app.RunFenetre()
