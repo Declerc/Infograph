@@ -77,4 +77,3 @@ class App:
         Fenetre.mainloop()
 
 
-
