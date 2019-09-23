@@ -63,12 +63,15 @@ class App:
         canvasButton.pack()
 
     def CreateTab(self):                # Fonction pour créer fenetre
+
         TabName = ttk.Frame(tabControl, width=200, height=200)
         tabControl.add(TabName)
         ttk.Label(TabName, text="This is Tab {}".format(tabControl.index(TabName))).grid(column=0, row=0, padx=10, pady=10)
         tabControl.tab(TabName, text= tabControl.index(TabName))  # Affiche numéro tab dans titre
 
+
     def RunFenetre(self):
+        global Fenetre
         Fenetre = Tk()
         Fenetre.title("Infograph")
         Fenetre['bg'] = 'grey'
