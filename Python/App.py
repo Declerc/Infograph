@@ -62,21 +62,24 @@ class App:
     canvasTab = []
 
     def CreateTab(self):                # Fonction pour créer fenetre
-        TabName = ttk.Frame(tabControl, width=200, height=200)
+
+        TabName = ttk.Frame(tabControl)
         tabControl.add(TabName)
         ttk.Label(TabName, text="This is Tab {}".format(tabControl.index(TabName))).grid(column=0, row=0, padx=10, pady=10)
         tabControl.tab(TabName, text= tabControl.index(TabName))  # Affiche numéro tab dans titre
 
-        # print(tabControl.tabs()[0])
-        self.canvas = Canvas(TabName, width=TabName.winfo_width(), height=TabName.winfo_height(), cursor="cross")  #Creer zone dessin pour le graph
+        tabControl.select(TabName)
+        self.canvas = Canvas(TabName, width=TabName.winfo_width(), height=TabName.winfo_height(), cursor="cross" ,bg="red")  #Creer zone dessin pour le graph
         self.canvas.grid(row=0, column=0, sticky=N + S + E + W)
+
+        print(TabName.winfo_width())
         canvasTab.append(self.canvas)
         # print(canvasTab)
     def MenuButtonGraph(self, Fenetre):             #Boutton dessin point a la main
-        canvasButton = Canvas(Fenetre, width=Fenetre.winfo_width(), height=30)
+        canvasButton = Canvas(Fenetre, width=Fenetre.winfo_width(), height=25)
         canvasButton.pack()
-        self.buttonPoint = Button(canvasButton, command=self.CreatePoint)
-        self.buttonPoint.pack(side=LEFT)
+        self.buttonPoint = Button(canvasButton, command=self.CreatePoint, width=3).place(x=5,y=2)
+        self.buttonPoint
 
     def CreatePoint(self):          #lie le canvas de la tab et l evenement du click souris
         canvasTab[tabControl.index(tabControl.select())].bind("<ButtonPress-1>", self.on_button_press)
@@ -84,13 +87,10 @@ class App:
 
 
     def on_button_press(self, event):  #récupère les positions de la souris au click et dessine un point
-        # save mouse drag start position
-        self.start_x = event.x
-        self.start_y = event.y
 
-        # create rectangle if not yet exist
-        # if not self.rect:
-        canvasTab[tabControl.index(tabControl.select())].create_arc(event.x, event.y, event.x, event.y, fill="blue", outline="#DDD", width=15)
+        canvasTab[tabControl.index(tabControl.select())].create_oval(event.x - 20, event.y - 20, event.x + 20, event.y + 20,
+                                                                     fill="blue", outline="#DDD", width=4)
+
 
     def on_button_release(self, event):
         pass
@@ -102,12 +102,13 @@ class App:
         # Mettre en global pour etre reconnu dans createTab
 
         Fenetre.geometry("{}x{}".format(self._width, self._height))
+        Fenetre.minsize(800, 600)
 
 
 
         Fenetre.update_idletasks()  # Permet que winfo_height et width ne soit pas égaux à 1.
-        canvasFenetre = Canvas(Fenetre, width=Fenetre.winfo_width(), height=Fenetre.winfo_height()).place(x= 0, y = 0)  # Canvas de toute la fenetre
-        canvasConsole = Canvas(Fenetre, bg = "black", width = 100, height = Fenetre.winfo_height()) # Canvas console
+        canvasFenetre = Canvas(Fenetre, width=Fenetre.winfo_width()*(3/4), height=Fenetre.winfo_height()).place(x= 0, y = 0)  # Canvas de toute la fenetre
+        canvasConsole = Canvas(Fenetre, bg = "black", width = Fenetre.winfo_height()*(1/4), height = Fenetre.winfo_height()) # Canvas console
 
         self.CreationMenu(Fenetre)
         self.MenuButtonGraph(Fenetre)
