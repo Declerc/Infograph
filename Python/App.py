@@ -66,7 +66,7 @@ class App:
         ttk.Label(TabName, text="This is Tab {}".format(tabControl.index(TabName))).grid(column=0, row=0, padx=10, pady=10)
         tabControl.tab(TabName, text= tabControl.index(TabName))  # Affiche numéro tab dans titre
 
-        self.canvas = Canvas(TabName, width=TabName.winfo_width(), cursor="cross")  #Creer zone dessin pour le graph
+        self.canvas = Canvas(TabName, width=TabName.winfo_width(), height=TabName.winfo_height(), cursor="cross")  #Creer zone dessin pour le graph
         self.canvas.grid(row=0, column=0, sticky=N + S + E + W)
 
     def MenuButtonGraph(self, Fenetre):             #Boutton dessin point a la main
