@@ -61,15 +61,12 @@ class App:
 
 
     def CreateTab(self):                # Fonction pour créer fenetre
-
         TabName = ttk.Frame(tabControl, width=200, height=200)
         tabControl.add(TabName)
         ttk.Label(TabName, text="This is Tab {}".format(tabControl.index(TabName))).grid(column=0, row=0, padx=10, pady=10)
         tabControl.tab(TabName, text= tabControl.index(TabName))  # Affiche numéro tab dans titre
 
-<<<<<<< HEAD
-=======
-        self.canvas = Canvas(TabName, width=TabName.winfo_width(), cursor="cross")  #Creer zone dessin pour le graph
+        self.canvas = Canvas(TabName, width=TabName.winfo_width(), height=TabName.winfo_height(), cursor="cross")  #Creer zone dessin pour le graph
         self.canvas.grid(row=0, column=0, sticky=N + S + E + W)
 
     def MenuButtonGraph(self, Fenetre):             #Boutton dessin point a la main
@@ -94,10 +91,8 @@ class App:
 
     def on_button_release(self, event):
         pass
->>>>>>> 71b9f54202b069e0bc448005bda975d8860b0842
 
     def RunFenetre(self):
-        global Fenetre
         Fenetre = Tk()
         Fenetre.title("Infograph")
         Fenetre['bg'] = 'grey'
