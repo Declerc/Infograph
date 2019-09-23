@@ -58,9 +58,7 @@ class App:
 
         Fenetre.config(menu=Menubar)
 
-    def MenuButtonGraph(self, Fenetre):
-        canvasButton = Canvas(Fenetre, width=Fenetre.winfo_width(), height=30)
-        canvasButton.pack()
+
 
     def CreateTab(self):                # Fonction pour créer fenetre
 
@@ -69,6 +67,34 @@ class App:
         ttk.Label(TabName, text="This is Tab {}".format(tabControl.index(TabName))).grid(column=0, row=0, padx=10, pady=10)
         tabControl.tab(TabName, text= tabControl.index(TabName))  # Affiche numéro tab dans titre
 
+<<<<<<< HEAD
+=======
+        self.canvas = Canvas(TabName, width=TabName.winfo_width(), cursor="cross")  #Creer zone dessin pour le graph
+        self.canvas.grid(row=0, column=0, sticky=N + S + E + W)
+
+    def MenuButtonGraph(self, Fenetre):             #Boutton dessin point a la main
+        canvasButton = Canvas(Fenetre, width=Fenetre.winfo_width(), height=30)
+        canvasButton.pack()
+        self.buttonPoint = Button(canvasButton, command=self.CreatePoint)
+        self.buttonPoint.pack(side=LEFT)
+
+    def CreatePoint(self):          #lie le canvas de la tab et l evenement du click souris
+        self.canvas.bind("<ButtonPress-1>", self.on_button_press)
+        self.canvas.bind("<ButtonRelease-1>", self.on_button_release)
+
+
+    def on_button_press(self, event):  #récupère les positions de la souris au click et dessine un point
+        # save mouse drag start position
+        self.start_x = event.x
+        self.start_y = event.y
+
+        # create rectangle if not yet exist
+        # if not self.rect:
+        self.canvas.create_arc(event.x, event.y, event.x, event.y, fill="blue", outline="#DDD", width=15)
+
+    def on_button_release(self, event):
+        pass
+>>>>>>> 71b9f54202b069e0bc448005bda975d8860b0842
 
     def RunFenetre(self):
         global Fenetre
