@@ -58,6 +58,10 @@ class App:
 
         Fenetre.config(menu=Menubar)
 
+    def MenuButtonGraph(self, Fenetre):
+        canvasButton = Canvas(Fenetre, width=Fenetre.winfo_width(), height=30)
+        canvasButton.pack()
+
     def CreateTab(self):                # Fonction pour créer fenetre
         TabName = ttk.Frame(tabControl, width=200, height=200)
         tabControl.add(TabName)
@@ -72,13 +76,14 @@ class App:
 
         Fenetre.geometry("{}x{}".format(self._width, self._height))
 
-        self.CreationMenu(Fenetre)
+
 
         Fenetre.update_idletasks()  # Permet que winfo_height et width ne soit pas égaux à 1.
         canvasFenetre = Canvas(Fenetre, width=Fenetre.winfo_width(), height=Fenetre.winfo_height()).place(x= 0, y = 0)  # Canvas de toute la fenetre
         canvasConsole = Canvas(Fenetre, bg = "black", width = 100, height = Fenetre.winfo_height()) # Canvas console
 
-
+        self.CreationMenu(Fenetre)
+        self.MenuButtonGraph(Fenetre)
         # print(Fenetre.winfo_width(), Fenetre.winfo_height())
         canvasConsole.pack(side=RIGHT)
         global tabControl  # Global pour être reconnu dans autres fonctions
