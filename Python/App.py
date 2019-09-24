@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 
 
+
 class App:
     @property   # Getter Setter
     def Width(self):
@@ -77,7 +78,7 @@ class App:
         # print(canvasTab)
     def MenuButtonGraph(self, Fenetre):             #Boutton dessin point a la main
         canvasButton = Canvas(Fenetre, width=Fenetre.winfo_width(), height=25)
-        canvasButton.pack()
+        canvasButton.pack(fill=X)
         self.buttonPoint = Button(canvasButton, command=self.CreatePoint, width=3).place(x=5,y=2)
         self.buttonPoint
 
@@ -106,14 +107,22 @@ class App:
 
 
 
+
+
+
         Fenetre.update_idletasks()  # Permet que winfo_height et width ne soit pas égaux à 1.
         canvasFenetre = Canvas(Fenetre, width=Fenetre.winfo_width()*(3/4), height=Fenetre.winfo_height()).place(x= 0, y = 0)  # Canvas de toute la fenetre
         canvasConsole = Canvas(Fenetre, bg = "black", width = Fenetre.winfo_height()*(1/4), height = Fenetre.winfo_height()) # Canvas console
 
+        #def handle_configure(event):
+         #   canvasConsole.config(width = Fenetre.winfo_width()*(1/4), height = Fenetre.winfo_height())
+
+        #Fenetre.bind("<Configure>", handle_configure)
+
         self.CreationMenu(Fenetre)
         self.MenuButtonGraph(Fenetre)
         # print(Fenetre.winfo_width(), Fenetre.winfo_height())
-        canvasConsole.pack(side=RIGHT)
+        canvasConsole.pack(side=RIGHT, fill=Y)
         global tabControl  # Global pour être reconnu dans autres fonctions
         tabControl = ttk.Notebook(canvasFenetre)  # Tabs dépendent du canvas
         tabControl.pack(expand=1, fill="both")  # Pack to make visible
