@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-
+from tkinter import messagebox
 
 
 class App:
@@ -80,11 +80,17 @@ class App:
         canvasButton = Canvas(Fenetre, width=Fenetre.winfo_width(), height=25)
         canvasButton.pack(fill=X)
         self.buttonPoint = Button(canvasButton, command=self.CreatePoint, width=3).place(x=5,y=2)
-        self.buttonPoint
+
+
+       # if not tabControl.get() :
 
     def CreatePoint(self):          #lie le canvas de la tab et l evenement du click souris
-        canvasTab[tabControl.index(tabControl.select())].bind("<ButtonPress-1>", self.on_button_press)
-        canvasTab[tabControl.index(tabControl.select())].bind("<ButtonRelease-1>", self.on_button_release)
+        try:
+            canvasTab[tabControl.index(tabControl.select())].bind("<ButtonPress-1>", self.on_button_press)
+            canvasTab[tabControl.index(tabControl.select())].bind("<ButtonRelease-1>", self.on_button_release)
+        except (TclError):
+            messagebox.showerror("Erreur Tab", "Vous devez créer une table pour dessiner un graphe : \nFichier > Créer")
+
 
 
     def on_button_press(self, event):  #récupère les positions de la souris au click et dessine un point
