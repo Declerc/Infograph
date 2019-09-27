@@ -1,26 +1,13 @@
-class Objet:
-    @property
-    def Couleur(self):
-        return self._couleur
-    @Couleur.setter
-    def Couleur(self, value):
-        self._couleur = value
+from tkinter import *
 
-    def __init__(self, couleur="Beige"):
-        self.Couleur = couleur
+def main():
+  root=Tk()
+  root.title("Test Numbers")
+  root.geometry("550x350")
+  def d(event):
+      print(event.width,event.height)
+  root.bind('<Configure>',d)
+  root.mainloop()
 
-    def __str__(self):
-        return self.Couleur
-
-    def Methodedeclasse():
-        print("Yolo")
-
-class chaise(Objet):
-    def __init__(self):
-        base.__init__()
-
-
-
-ob = Objet()
-print(ob)
-Objet.Methodedeclasse()
+if __name__=="__main__":
+  main()

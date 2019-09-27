@@ -73,6 +73,8 @@ class App:
         self.canvas = Canvas(TabName, width=TabName.winfo_width(), height=TabName.winfo_height(), cursor="cross" ,bg="red")  #Creer zone dessin pour le graph
         self.canvas.grid(row=0, column=0, sticky=N + S + E + W)
 
+        TabName.bind('<Configure>', self.d) #Bind tabName à la fonction qui change la taille des canvas dynamiquement
+
         print(TabName.winfo_width())
         canvasTab.append(self.canvas)
         # print(canvasTab)
@@ -102,6 +104,9 @@ class App:
     def on_button_release(self, event):
         pass
 
+    def d(self, event):     #Permet que la taille des canvas des dessins soit responsive
+        self.canvas.config(width=event.width, height=event.height)
+
     def RunFenetre(self):
         Fenetre = Tk()
         Fenetre.title("Infograph")
@@ -110,8 +115,6 @@ class App:
 
         Fenetre.geometry("{}x{}".format(self._width, self._height))
         Fenetre.minsize(800, 600)
-
-
 
 
 
