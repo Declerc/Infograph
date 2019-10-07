@@ -26,6 +26,7 @@ class App:
         Menu1 = Menu(Menubar, tearoff=0)
         Menu1.add_command(label="Créer", command=self.CreateTab)
         Menu1.add_command(label="Editer")
+        Menu1.add_command(label="Supprimer", command=self.DeleteTab)
         Menu1.add_separator()
         Menu1.add_command(label="Quitter", command=Fenetre.quit)
         Menubar.add_cascade(label="Fichier", menu=Menu1)
@@ -65,6 +66,7 @@ class App:
     def CreateTab(self):                # Fonction pour créer fenetre
 
         TabName = ttk.Frame(tabControl)
+        print(TabName)
         tabControl.add(TabName)
         ttk.Label(TabName, text="This is Tab {}".format(tabControl.index(TabName))).grid(column=0, row=0, padx=10, pady=10)
         tabControl.tab(TabName, text= tabControl.index(TabName))  # Affiche numéro tab dans titre
@@ -73,11 +75,24 @@ class App:
         self.canvas = Canvas(TabName, width=TabName.winfo_width(), height=TabName.winfo_height(), cursor="cross" ,bg="red")  #Creer zone dessin pour le graph
         self.canvas.grid(row=0, column=0, sticky=N + S + E + W)
 
-        TabName.bind('<Configure>', self.d) #Bind tabName à la fonction qui change la taille des canvas dynamiquement
+        tabControl.bind('<Configure>', self.d) #Bind tabName à la fonction qui change la taille des canvas dynamiquement
 
-        print(TabName.winfo_width())
+        #print(TabName.winfo_width())
         canvasTab.append(self.canvas)
-        # print(canvasTab)
+
+
+    def DeleteTab(self):
+        tabControl.forget(tabControl.select())
+        print("Tab select ", tabControl.select())
+        print("Tab frame ", ttk.Frame(tabControl))
+        print("Tabs ", tabControl.tabs())
+
+    def handle_tab_changed(self, event): #Detecte si la tab selectioné a changé
+        selection = event.widget.select()
+        tab = event.widget.tab(selection, "text")
+        print("text:", tab)
+        self.canvas.config(width=self.Width, height=self.Height)
+
     def MenuButtonGraph(self, Fenetre):             #Boutton dessin point a la main
         canvasButton = Canvas(Fenetre, width=Fenetre.winfo_width(), height=25)
         canvasButton.pack(fill=X)
@@ -90,16 +105,16 @@ class App:
         try:
             canvasTab[tabControl.index(tabControl.select())].bind("<ButtonPress-1>", self.on_button_press)
             canvasTab[tabControl.index(tabControl.select())].bind("<ButtonRelease-1>", self.on_button_release)
-        except (TclError):
+        except TclError:
             messagebox.showerror("Erreur Tab", "Vous devez créer une table pour dessiner un graphe : \nFichier > Créer")
 
 
 
-    def on_button_press(self, event):  #récupère les positions de la souris au click et dessine un point
 
+    def on_button_press(self, event):  #récupère les positions de la souris au click et dessine un point
+        print(tabControl.select())
         canvasTab[tabControl.index(tabControl.select())].create_oval(event.x - 20, event.y - 20, event.x + 20, event.y + 20,
                                                                      fill="blue", outline="#DDD", width=4)
-
 
     def on_button_release(self, event):
         pass
@@ -116,17 +131,9 @@ class App:
         Fenetre.geometry("{}x{}".format(self._width, self._height))
         Fenetre.minsize(800, 600)
 
-
-
-
         Fenetre.update_idletasks()  # Permet que winfo_height et width ne soit pas égaux à 1.
         canvasFenetre = Canvas(Fenetre, width=Fenetre.winfo_width()*(3/4), height=Fenetre.winfo_height()).place(x= 0, y = 0)  # Canvas de toute la fenetre
         canvasConsole = Canvas(Fenetre, bg = "black", width = Fenetre.winfo_height()*(1/4), height = Fenetre.winfo_height()) # Canvas console
-
-        #def handle_configure(event):
-         #   canvasConsole.config(width = Fenetre.winfo_width()*(1/4), height = Fenetre.winfo_height())
-
-        #Fenetre.bind("<Configure>", handle_configure)
 
         self.CreationMenu(Fenetre)
         self.MenuButtonGraph(Fenetre)
@@ -135,5 +142,5 @@ class App:
         global tabControl  # Global pour être reconnu dans autres fonctions
         tabControl = ttk.Notebook(canvasFenetre)  # Tabs dépendent du canvas
         tabControl.pack(expand=1, fill="both")  # Pack to make visible
-
+        tabControl.bind("<<NotebookTabChanged>>", self.handle_tab_changed)
         Fenetre.mainloop()
