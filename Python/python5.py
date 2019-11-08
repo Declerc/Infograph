@@ -1,9 +1,15 @@
 import random as random
+from pprint import pprint
+#import pygame
+#from pygame.locals import *
 from tkinter import * 
 from tkinter import ttk
 import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
+
+from tkinter import messagebox
 
 import pylab as P
 
@@ -26,6 +32,8 @@ class App:
         self.Height = height
         self.start_x = None
         self.start_y = None
+        self.premierNode = None
+        self.derniereNode = None
         self.ligne = None
         self.x = self.y = 0
 
@@ -55,7 +63,7 @@ class App:
 
         Menu4.add_command(label="Bellman")
         Menu4.add_command(label="Ford")
-        Menu4.add_command(label="Dijkstra")
+        Menu4.add_command(label="Dijkstra", command=self.ActionDijkstra)
         Menu4.add_separator()
         Menu4.add_command(label="Matrice")
 
@@ -93,55 +101,95 @@ class App:
         
     def CreateTrait(self):
         self.canvas.bind("<ButtonPress-1>", self.on_button_pressTrait)
-        self.canvas.bind("<B1-Motion>", self.on_move_pressTrait)
-        self.canvas.bind("<ButtonRelease-1>", self.on_button_releaseTrait)
+        #self.canvas.bind("<ButtonPress-1>", self.on_button_releaseTrait)
     def on_button_pressOval(self, event):
         # save mouse drag start position
-        global i
+        global y
         global graph
         global tabCoordNodes
-        self.canvas.create_oval(event.x-20, event.y-20, event.x+20,event.y+20, fill="blue", outline="#DDD", width=4)
-        tabCoordNodes[0].append(event.x)
-        tabCoordNodes[1].append(event.y)
-        graph.add_node(i)  
-        i= i+1
+        h=0
+        if y==1:
+            self.canvas.create_oval(event.x-20, event.y-20, event.x+20,event.y+20, fill="blue", outline="#DDD", width=4)
+            tabCoordNodes[0].append(event.x)
+            tabCoordNodes[1].append(event.y)
+            graph.add_node(y)  
+            y= y+1
+        else:
+            for i in range(len(tabCoordNodes[0])):
+                if tabCoordNodes[0][i]+20 > event.x and tabCoordNodes[0][i]-20 < event.x and tabCoordNodes[1][i]+20 > event.y and tabCoordNodes[1][i]-20 < event.y:
+                    print("salut")
+                    h=1
+            if h==0:
+                    self.canvas.create_oval(event.x-20, event.y-20, event.x+20,event.y+20, fill="blue", outline="#DDD", width=4)
+                    tabCoordNodes[0].append(event.x)
+                    tabCoordNodes[1].append(event.y)
+                    graph.add_node(y)  
+                    y= y+1
+        
     def on_button_release(self, event):
-        pass 
+        pass
     
+    
+    
+    
+
     def on_button_releaseTrait(self, event):
-        tabCoordEdges[0].append(event.x)
-        tabCoordEdges[1].append(event.y)
+        global z
+        #tabCoordEdges[0].append(event.x)
+        #tabCoordEdges[1].append(event.y)
+        for i in range(len(tabCoordNodes[0])):
+            if tabCoordNodes[0][i]+20 > event.x and tabCoordNodes[0][i]-20 < event.x and tabCoordNodes[1][i]+20 > event.y and tabCoordNodes[1][i]-20 < event.y:
+                if self.start_x +40 > event.x and self.start_x -40 < event.x and self.start_y +40 > event.y and self.start_y -40 < event.y : 
+                    pass
+                else:
+                    self.ligne = self.canvas.create_line(self.start_x, self.start_y, event.x, event.y)
+                    self.canvas.bind("<ButtonPress-1>", self.on_button_pressTrait)
+                    self.derniereNode = i+1
+                    #print(self.premierNode)
+                    #print(self.derniereNode)
+                    graph.add_edge(self.premierNode,self.derniereNode)
+                    tabNodesEdges[z].append(self.derniereNode)
+                    z=z-1
     
     def on_button_pressTrait(self, event):
-        for i in range(30):
+        global z
+        for i in range(len(tabCoordNodes[0])):
             if tabCoordNodes[0][i]+20 > event.x and tabCoordNodes[0][i]-20 < event.x and tabCoordNodes[1][i]+20 > event.y and tabCoordNodes[1][i]-20 < event.y:
             # save mouse drag start position
+                    
                 self.start_x = event.x
                 self.start_y = event.y
-                tabCoordEdges[0].append(event.x)
-                tabCoordEdges[1].append(event.y)
-            # create ligne if not yet exist
-            #if not self.rect:
-            
-                self.ligne = self.canvas.create_line(self.x, self.y, 1, 1)
+                self.premierNode = i+1
+                tabNodesEdges[z].append(self.premierNode)
+                z=z+1
+                
+                
+                #tabCoordEdges[0].append(event.x)
+                #tabCoordEdges[1].append(event.y)
+                self.canvas.bind("<ButtonPress-1>", self.on_button_releaseTrait)
    
+    def ActionDijkstra(self):
+        global graph
+        
+        messagebox.showinfo("Title",nx.dijkstra_path(graph,1,4))
 
-    def on_move_pressTrait(self, event):
-        curX, curY = (event.x, event.y)
 
-        # expand ligne as you drag the mouse
-        self.canvas.coords(self.ligne, self.start_x, self.start_y, curX, curY)
+        
         
         
 #tabCoordNodes x=tabCoordNodes[0]  / y=tabCoordNodes[1]
 
 tabCoordNodes= [[],[]]
-tabCoordEdges= [[],[]]
-i=1
-graph = nx.DiGraph()
+#tabCoordEdges= [[],[]]
+tabNodesEdges = [[],[]]
+y=1
+z=0
+graph = nx.Graph()
 app = App(1000, 1200)
 app.RunFenetre()
+pprint(tabNodesEdges)
 nx.draw(graph) 
 P.show()
+
 
   
