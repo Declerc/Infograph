@@ -41,6 +41,7 @@ class App():
         self.canvas_console = Canvas(self.root, bg="black", width = self.root.winfo_height()*(1/4), height=self.root.winfo_height())  # Canvas console
         self.canvas_console.pack(side=RIGHT, fill=Y)
 
+        self.canvasTab = []  # Tableau qui contient les canvas des Tabs
         self.notebook = ttk.Notebook(self.canvas_fenetre)
         self.notebook.pack(expand=1, fill="both")
         self.add_tab()
@@ -52,6 +53,9 @@ class App():
         self.notebook.add(self.tab)  # Add tab to the notebook
         self.notebook.tab(self.tab, text=self.notebook.index(self.tab))  # Add title to the tab
         self.notebook.select(self.tab)
+        self.canvas = Canvas(self.tab, width=self.tab.winfo_width(), height=self.tab.winfo_height(), cursor="cross", bg="red")
+        self.canvas.grid(row=0, column=0, sticky=N + S + E + W)
+        self.canvasTab.append(self.canvas)
 
     def delete_tab(self):
         self.notebook.forget(self.notebook.select())
@@ -65,16 +69,17 @@ class App():
         canvas_button.pack(fill=X)
         self.buttonPoint = Button(canvas_button, command=self.create_point, width=3).place(x=5, y=2)
 
-    def create_point(self):          #TODO: A FAIRE CAR NE MARCHE PAS, PAS D’EQUIVALENCE AVEC PRECEDENTE VARIABLE
+    def create_point(self):        
         try:
-            self.tab[self.notebook.index(self.notebook.select())].bind("<ButtonPress-1>", self.on_button_press)
-            self.tab[self.notebook.index(self.notebook.select())].bind("<ButtonRelease-1>", self.on_button_release)
+            self.canvasTab[self.notebook.index(self.notebook.select())].bind("<ButtonPress-1>", self.on_button_press)
+            self.canvasTab[self.notebook.index(self.notebook.select())].bind("<ButtonRelease-1>", self.on_button_release)
         except TclError:
             messagebox.showerror("Erreur Tab", "Vous devez créer une table pour dessiner un graphe : \nFichier > Créer")
 
     def on_button_press(self, event):  #récupère les positions de la souris au click et dessine un point
-        self.tab[self.notebook.index(self.notebook.select())].create_oval(event.x - 20, event.y - 20, event.x + 20, event.y + 20,
+        self.canvasTab[self.notebook.index(self.notebook.select())].create_oval(event.x - 20, event.y - 20, event.x + 20, event.y + 20,
                                                                      fill="blue", outline="#DDD", width=4)
+
 
     def on_button_release(self, event):
         pass
