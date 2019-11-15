@@ -7,10 +7,30 @@ class MyTab(Frame):
 
     def __init__(self, root):
         Frame.__init__(self, root)
-
         self.root = root
 
-class App():
+
+# a subclass of Canvas for dealing with resizing of windows
+class ResizingCanvas(Canvas):
+    def __init__(self,parent,**kwargs):
+        Canvas.__init__(self,parent,**kwargs)
+        self.bind("<Configure>", self.on_resize)
+        self.height = self.winfo_reqheight()
+        self.width = self.winfo_reqwidth()
+
+    def on_resize(self,event):
+        # determine the ratio of old width/height to new width/height
+        #wscale = float(event.width)/self.width
+        #hscale = float(event.height)/self.height
+        self.width = event.width
+        self.height = event.height
+        # resize the canvas
+        self.config(width=self.width, height=self.height)
+        # rescale all the objects tagged with the "all" tag
+        #self.scale("all",0,0,wscale,hscale)
+
+
+class App:
     @property  # Getter Setter
     def Width(self):
         return self._width
@@ -53,8 +73,8 @@ class App():
         self.notebook.add(tab)  # Add tab to the notebook
         self.notebook.tab(tab, text=self.notebook.index(tab))  # Add title to the tab
         self.notebook.select(tab)
-        canvas = Canvas(tab, width=tab.winfo_width(), height=tab.winfo_height(), cursor="cross", bg="red")
-        canvas.grid(row=0, column=0, sticky=N + S + E + W)
+        canvas = ResizingCanvas(tab, width=tab.winfo_width(), height=tab.winfo_height(), cursor="cross", bg="red", highlightthickness=0)
+        canvas.pack(fill=BOTH, expand=YES)
         self.canvasTab.append(canvas)
 
     def delete_tab(self):
