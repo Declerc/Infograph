@@ -50,6 +50,7 @@ class App:
         Menu2 = Menu(Menubar, tearoff=0)
 
         Menu2.add_command(label="Couper",command=self.CreateTrait)
+        Menu2.add_command(label="CouperWeight",command=self.CreateTraitWeight)
         Menu2.add_command(label="Copier")
         Menu2.add_command(label="Coller")
         Menubar.add_cascade(label="Editer", menu=Menu2)
@@ -61,9 +62,9 @@ class App:
 
         Menu4 = Menu(Menubar, tearoff=0)
 
-        Menu4.add_command(label="Bellman")
-        Menu4.add_command(label="Ford")
+        Menu4.add_command(label="Shortest Path", command=self.ActionShortest_Path)
         Menu4.add_command(label="Dijkstra", command=self.ActionDijkstra)
+        Menu4.add_command(label="Bellman", command=self.ActionBellman_Ford)
         Menu4.add_separator()
         Menu4.add_command(label="Matrice")
 
@@ -101,6 +102,9 @@ class App:
         
     def CreateTrait(self):
         self.canvas.bind("<ButtonPress-1>", self.on_button_pressTrait)
+        #self.canvas.bind("<ButtonPress-1>", self.on_button_releaseTrait)
+    def CreateTraitWeight(self):
+        self.canvas.bind("<ButtonPress-1>", self.on_button_pressTraitWeight)
         #self.canvas.bind("<ButtonPress-1>", self.on_button_releaseTrait)
     def on_button_pressOval(self, event):
         # save mouse drag start position
@@ -152,6 +156,24 @@ class App:
                     graph.add_edge(self.premierNode,self.derniereNode)
                     tabNodesEdges[z].append(self.derniereNode)
                     z=z-1
+                    
+    def on_button_releaseTraitWeight(self, event):
+        global z
+        #tabCoordEdges[0].append(event.x)
+        #tabCoordEdges[1].append(event.y)
+        for i in range(len(tabCoordNodes[0])):
+            if tabCoordNodes[0][i]+20 > event.x and tabCoordNodes[0][i]-20 < event.x and tabCoordNodes[1][i]+20 > event.y and tabCoordNodes[1][i]-20 < event.y:
+                if self.start_x +40 > event.x and self.start_x -40 < event.x and self.start_y +40 > event.y and self.start_y -40 < event.y : 
+                    pass
+                else:
+                    self.ligne = self.canvas.create_line(self.start_x, self.start_y, event.x, event.y)
+                    self.canvas.bind("<ButtonPress-1>", self.on_button_pressTraitWeight)
+                    self.derniereNode = i+1
+                    #print(self.premierNode)
+                    #print(self.derniereNode)
+                    graph.add_edge(self.premierNode,self.derniereNode, weight=-4)
+                    tabNodesEdges[z].append(self.derniereNode)
+                    z=z-1
     
     def on_button_pressTrait(self, event):
         global z
@@ -169,7 +191,32 @@ class App:
                 #tabCoordEdges[0].append(event.x)
                 #tabCoordEdges[1].append(event.y)
                 self.canvas.bind("<ButtonPress-1>", self.on_button_releaseTrait)
-   
+                
+    def on_button_pressTraitWeight(self, event):
+        global z
+        for i in range(len(tabCoordNodes[0])):
+            if tabCoordNodes[0][i]+20 > event.x and tabCoordNodes[0][i]-20 < event.x and tabCoordNodes[1][i]+20 > event.y and tabCoordNodes[1][i]-20 < event.y:
+            # save mouse drag start position
+                    
+                self.start_x = event.x
+                self.start_y = event.y
+                self.premierNode = i+1
+                tabNodesEdges[z].append(self.premierNode)
+                z=z+1
+                
+                
+                #tabCoordEdges[0].append(event.x)
+                #tabCoordEdges[1].append(event.y)
+                self.canvas.bind("<ButtonPress-1>", self.on_button_releaseTraitWeight)
+                
+    def ActionShortest_Path(self):
+        global graph
+        try:
+            p=nx.shortest_path(graph,1,4)
+            messagebox.showinfo("Chemin le plus court",p)
+        except:
+            messagebox.showinfo("Chemin le plus court", "Pas de chemin entre ... et ...")
+            
     def ActionDijkstra(self):
         global graph
         try:
@@ -177,6 +224,14 @@ class App:
             messagebox.showinfo("dijkstra",p)
         except:
             messagebox.showinfo("dijkstra", "Pas de Path entre ... et ...")
+            
+    def ActionBellman_Ford(self):
+        global graph
+        try:
+            pred, dist=nx.bellman_ford_predecessor_and_distance(graph,1)
+            messagebox.showinfo("Bellman_Ford",'Predécédents : '+str(pred)+' Distances : '+str(dist))    
+        except:
+            messagebox.showinfo("Bellman_Ford", "Mauvaise source ou cycle poids négatif")
 
 
         
@@ -189,7 +244,7 @@ tabCoordNodes= [[],[]]
 tabNodesEdges = [[],[]]
 y=1
 z=0
-graph = nx.Graph()
+graph = nx.DiGraph()
 app = App(1000, 1200)
 app.RunFenetre()
 pprint(tabNodesEdges)
