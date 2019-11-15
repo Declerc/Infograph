@@ -113,6 +113,7 @@ class App:
             tabCoordNodes[0].append(event.x)
             tabCoordNodes[1].append(event.y)
             graph.add_node(y)  
+            self.canvas.create_text(event.x, event.y, text=y, fill="lightgreen")
             y= y+1
         else:
             for i in range(len(tabCoordNodes[0])):
@@ -123,7 +124,8 @@ class App:
                     self.canvas.create_oval(event.x-20, event.y-20, event.x+20,event.y+20, fill="blue", outline="#DDD", width=4)
                     tabCoordNodes[0].append(event.x)
                     tabCoordNodes[1].append(event.y)
-                    graph.add_node(y)  
+                    graph.add_node(y)
+                    self.canvas.create_text(event.x, event.y, text=y, fill="lightgreen")
                     y= y+1
         
     def on_button_release(self, event):
@@ -170,8 +172,11 @@ class App:
    
     def ActionDijkstra(self):
         global graph
-        
-        messagebox.showinfo("Title",nx.dijkstra_path(graph,1,4))
+        try:
+            p=nx.dijkstra_path(graph,1,4)
+            messagebox.showinfo("dijkstra",p)
+        except:
+            messagebox.showinfo("dijkstra", "Pas de Path entre ... et ...")
 
 
         
