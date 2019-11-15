@@ -49,13 +49,13 @@ class App():
 
 
     def add_tab(self):
-        self.tab = MyTab(self.notebook)
-        self.notebook.add(self.tab)  # Add tab to the notebook
-        self.notebook.tab(self.tab, text=self.notebook.index(self.tab))  # Add title to the tab
-        self.notebook.select(self.tab)
-        self.canvas = Canvas(self.tab, width=self.tab.winfo_width(), height=self.tab.winfo_height(), cursor="cross", bg="red")
-        self.canvas.grid(row=0, column=0, sticky=N + S + E + W)
-        self.canvasTab.append(self.canvas)
+        tab = MyTab(self.notebook)
+        self.notebook.add(tab)  # Add tab to the notebook
+        self.notebook.tab(tab, text=self.notebook.index(tab))  # Add title to the tab
+        self.notebook.select(tab)
+        canvas = Canvas(tab, width=tab.winfo_width(), height=tab.winfo_height(), cursor="cross", bg="red")
+        canvas.grid(row=0, column=0, sticky=N + S + E + W)
+        self.canvasTab.append(canvas)
 
     def delete_tab(self):
         self.notebook.forget(self.notebook.select())
