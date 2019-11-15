@@ -81,7 +81,7 @@ class App:
         tabControl.add(TabName, text="1")
         ttk.Label(TabName, text="This is Tab {}".format(tabControl.index(tabControl.select()))).grid(column=0, row=0, padx=10, pady=10)
         self.canvas = Canvas(TabName,  cursor="cross")
-        self.canvas.grid(row=0,column=0,sticky=N+S+E+W)
+        self.canvas.grid(row=0,column=0, sticky=N+S+E+W)
 
     def RunFenetre(self):
         Fenetre = Tk()
