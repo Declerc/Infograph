@@ -43,7 +43,9 @@ class Graph():
         self.graph = nx.Graph()
         self.tabCoordNodes = [[], []]
         self.tabNodesEdges = [[], []]
-        self.x = self.y = 0
+        self.x = 0
+        self.z = 0
+        self.y = 1
         self.canvasTab = canvasTableau
         self.notebook = parentNotebook
 
@@ -59,15 +61,14 @@ class Graph():
 
     def on_button_pressOval(self, event):
         # save mouse drag start position
-        global y
         h = 0
-        if y == 1:
+        if self.y == 1:
             self.canvasTab[self.notebook.index(self.notebook.select())].create_oval(event.x - 20, event.y - 20, event.x + 20, event.y + 20,
                                                                                     fill="blue", outline="#DDD", width=4)
             self.tabCoordNodes[0].append(event.x)
             self.tabCoordNodes[1].append(event.y)
-            self.graph.add_node(y)
-            y = y + 1
+            self.graph.add_node(self.y)
+            self.y = self.y + 1
         else:
             for i in range(len(self.tabCoordNodes[0])):
                 if self.tabCoordNodes[0][i] + 20 > event.x and self.tabCoordNodes[0][i] - 20 < event.x and self.tabCoordNodes[1][
@@ -78,45 +79,44 @@ class Graph():
                                                                                         fill="blue", outline="#DDD", width=4)
                 self.tabCoordNodes[0].append(event.x)
                 self.tabCoordNodes[1].append(event.y)
-                self.graph.add_node(y)
-                y = y + 1
+                self.graph.add_node(self.y)
+                self.y = self.y + 1
 
     def on_button_release(self, event):
         pass
 
     def on_button_releaseTrait(self, event):
-        global z
         # tabCoordEdges[0].append(event.x)
         # tabCoordEdges[1].append(event.y)
         for i in range(len(self.tabCoordNodes[0])):
-            if self.tabCoordNodes[0][i] + 20 > event.x and self.tabCoordNodes[0][i] - 20 < event.x and self.tabCoordNodes[1][i] + 20 >\
-                    event.y and self.tabCoordNodes[1][i] - 20 < event.y:
+            if self.tabCoordNodes[0][i] + 20 > event.x and self.tabCoordNodes[0][i] - 20 < event.x and self.tabCoordNodes[1][i] + 20 > event.y and self.tabCoordNodes[1][i] - 20 < event.y:
                 if self.start_x + 40 > event.x and self.start_x - 40 < event.x and self.start_y + 40 > event.y and self.start_y - 40 < event.y:
                     pass
                 else:
-                    self.ligne = self.canvas.create_line(self.start_x, self.start_y, event.x, event.y)
+                    self.ligne = self.canvasTab[self.notebook.index(self.notebook.select())].create_line(self.start_x, self.start_y, event.x, event.y)
                     self.canvasTab[self.notebook.index(self.notebook.select())].bind("<ButtonPress-1>", self.on_button_pressTrait)
                     self.derniereNode = i + 1
                     self.graph.add_edge(self.premierNode, self.derniereNode)
-                    self.tabNodesEdges[z].append(self.derniereNode)
-                    z = z - 1
+                    self.tabNodesEdges[self.z].append(self.derniereNode)
+                    print(self.z)
+                    self.z = self.z - 1
 
     def on_button_pressTrait(self, event):
-        global z
         for i in range(len(self.tabCoordNodes[0])):
-            if self.tabCoordNodes[0][i] + 20 > event.x and self.tabCoordNodes[0][i] - 20 < event.x and self.tabCoordNodes[1][i] + 20 > event.y \
-                    and self.tabCoordNodes[1][i] - 20 < event.y:
+            if self.tabCoordNodes[0][i] + 20 > event.x and self.tabCoordNodes[0][i] - 20 < event.x and self.tabCoordNodes[1][i] + 20 > event.y and self.tabCoordNodes[1][i] - 20 < event.y:
                 # save mouse drag start position
 
                 self.start_x = event.x
                 self.start_y = event.y
                 self.premierNode = i + 1
-                self.tabNodesEdges[z].append(self.premierNode)
-                z = z + 1
+                self.tabNodesEdges[self.z].append(self.premierNode)
+                print(self.premierNode)
+                print(self.z)
+                self.z = self.z + 1
 
                 # tabCoordEdges[0].append(event.x)
                 # tabCoordEdges[1].append(event.y))
-                self.canvasTab[self.notebook.index(self.notebook.select())].bind("<ButtonRelease-1>", self.on_button_releaseTrait)
+                self.canvasTab[self.notebook.index(self.notebook.select())].bind("<ButtonPress-1>", self.on_button_releaseTrait)
 
     def actionDijkstra(self):
         messagebox.showinfo("Title", nx.dijkstra_path(self.graph, 1, 4))
@@ -165,11 +165,10 @@ class App():
         self.notebook.add(tab)  # Add tab to the notebook
         self.notebook.tab(tab, text=self.notebook.index(tab))  # Add title to the tab
         self.notebook.select(tab)
-        #canvas = Canvas(tab, width=tab.winfo_width(), height=tab.winfo_height(), cursor="cross", bg="red")
-        canvas = ResizingCanvas(tab, width=tab.winfo_width(), height=tab.winfo_height(), bg="red", highlightthickness=0)
+        canvas = ResizingCanvas(tab, width=tab.winfo_width(), height=tab.winfo_height(), highlightthickness=0)
         canvas.pack(fill=BOTH, expand=YES)
-        #canvas.grid(row=0, column=0, sticky=N + S + E + W)
         self.canvasTab.append(canvas)
+        self.graph = Graph(self.canvasTab, self.notebook)
 
     def delete_tab(self):
         self.notebook.forget(self.notebook.select())
@@ -181,18 +180,15 @@ class App():
     def menu_button_graph(self):
         canvas_button = Canvas(self.root, width=self.root.winfo_width(), height=25)
         canvas_button.pack(fill=X)
-        self.buttonPoint = Button(canvas_button, command=self.create_point, width=3).place(x=5, y=2)
+        canvas_button2 = Canvas(self.root, width=self.root.winfo_width(), height=25)
+        canvas_button2.pack(fill=X)
+        self.buttonPoint = Button(canvas_button, command=self.graph.create_point, width=3).place(x=5, y=2)
+        self.buttonTrait = Button(canvas_button2, command=self.graph.createTrait, width=5).place(x=15, y=2)
 
-    def create_point(self):        
-        try:
-            self.canvasTab[self.notebook.index(self.notebook.select())].bind("<ButtonPress-1>", self.on_button_press)
-            self.canvasTab[self.notebook.index(self.notebook.select())].bind("<ButtonRelease-1>", self.on_button_release)
-        except TclError:
-            messagebox.showerror("Erreur Tab", "Vous devez créer une table pour dessiner un graphe : \nFichier > Créer")
 
-    def on_button_press(self, event):  #récupère les positions de la souris au click et dessine un point
-        self.canvasTab[self.notebook.index(self.notebook.select())].create_oval(event.x - 20, event.y - 20, event.x + 20, event.y + 20,
-                                                                     fill="blue", outline="#DDD", width=4)
+    #def on_button_press(self, event):  #récupère les positions de la souris au click et dessine un point
+        #self.canvasTab[self.notebook.index(self.notebook.select())].create_oval(event.x - 20, event.y - 20, event.x + 20, event.y + 20,
+                                                                     #fill="blue", outline="#DDD", width=4)
 
     def on_button_release(self, event):
         pass
