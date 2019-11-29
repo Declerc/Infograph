@@ -63,7 +63,7 @@ class App:
         Menu4 = Menu(Menubar, tearoff=0)
 
         Menu4.add_command(label="Shortest Path", command=self.ActionShortest_Path)
-        Menu4.add_command(label="Dijkstra", command=self.ActionDijkstra)
+        Menu4.add_command(label="Dijkstra", command=self.FenetreDijkstra)
         Menu4.add_command(label="Bellman", command=self.ActionBellman_Ford)
         Menu4.add_separator()
         Menu4.add_command(label="Matrice")
@@ -141,7 +141,7 @@ class App:
 
     def on_button_releaseTrait(self, event):
         global z
-        print("fuck you")
+        
         #tabCoordEdges[0].append(event.x)
         #tabCoordEdges[1].append(event.y)
         for i in range(len(tabCoordNodes[0])):
@@ -218,14 +218,42 @@ class App:
         except:
             messagebox.showinfo("Chemin le plus court", "Pas de chemin entre ... et ...")
             
-    def ActionDijkstra(self):
+    def ActionDijkstra(self,debut,fin):
         global graph
         try:
-            p=nx.dijkstra_path(graph,1,4)
+            
+            p=nx.dijkstra_path(graph,int(debut),int(fin))
             messagebox.showinfo("dijkstra",p)
         except:
             messagebox.showinfo("dijkstra", "Pas de Path entre ... et ...")
+    def FenetreDijkstra(self):  
+        def RecupData():
+            debut = entr1.get() 
+            fin = entr2.get()
+            fen1.destroy()
+            self.ActionDijkstra(debut,fin) 
+        fen1 = Tk()
+        fen1.geometry("350x160")
+        fen1.title('Algorithme de dijkstra')
+        
+        consigne = Label(fen1, text='Renseigné les 2 champs suivants avec des entiers :')
+        txt1 = Label(fen1, text='Noeud de départ :')
+        txt2 = Label(fen1, text='Noeud  d\'arrivée  :')
+        entr1 = Entry(fen1)
+        entr2 = Entry(fen1)
+        button = Button(fen1, text='submit', command=RecupData)
+        
+        consigne.grid(row=0, columnspan=2,pady=15, padx=20)
+        txt1.grid(row=1)
+        txt2.grid(row=2)
+        entr1.grid(row=1, column=1)
+        entr2.grid(row=2, column=1,pady=3)
+        
+        button.grid(row=3,columnspan=3, pady=15) 
+        
+        
             
+        
     def ActionBellman_Ford(self):
         global graph
         try:
@@ -233,7 +261,12 @@ class App:
             messagebox.showinfo("Bellman_Ford",'Predécédents : '+str(pred)+' Distances : '+str(dist))    
         except:
             messagebox.showinfo("Bellman_Ford", "Mauvaise source ou cycle poids négatif")
-
+        
+    
+        
+        
+    
+    
 
         
         
