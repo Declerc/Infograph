@@ -141,6 +141,7 @@ class App:
 
     def on_button_releaseTrait(self, event):
         global z
+        print("fuck you")
         #tabCoordEdges[0].append(event.x)
         #tabCoordEdges[1].append(event.y)
         for i in range(len(tabCoordNodes[0])):
@@ -244,7 +245,7 @@ tabCoordNodes= [[],[]]
 tabNodesEdges = [[],[]]
 y=1
 z=0
-graph = nx.DiGraph()
+graph = nx.Graph()
 app = App(1000, 1200)
 app.RunFenetre()
 pprint(tabNodesEdges)

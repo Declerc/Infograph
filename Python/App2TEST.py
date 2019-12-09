@@ -6,7 +6,7 @@ from pprint import pprint
 
 
 
-class MyTab(Frame):
+class MyTab(Frame): # Classe qui gère les Tabs
 
     def __init__(self, root):
         Frame.__init__(self, root)
@@ -14,7 +14,7 @@ class MyTab(Frame):
 
 
 # a subclass of Canvas for dealing with resizing of windows
-class ResizingCanvas(Canvas):
+class ResizingCanvas(Canvas): # Classe des canvas des tabs
     def __init__(self,parent,**kwargs):
         Canvas.__init__(self,parent,**kwargs)
         self.bind("<Configure>", self.on_resize)
@@ -33,8 +33,8 @@ class ResizingCanvas(Canvas):
         #self.scale("all",0,0,wscale,hscale)
 
 
-class Graph():
-    def __init__(self, canvasTableau, parentNotebook):
+class Graph():  # Classe des graphes
+    def __init__(self, canvasTableau, parentNotebook):  # Passe en paramètre le canvas de la Tab et le notebook qui gère tout les canvas
         self.start_x = None
         self.start_y = None
         self.premierNode = None
@@ -50,6 +50,7 @@ class Graph():
         self.notebook = parentNotebook
 
     def create_point(self):
+        print(self.canvasTab[self.notebook.index(self.notebook.select())])
         try:
             self.canvasTab[self.notebook.index(self.notebook.select())].bind("<ButtonPress-1>", self.on_button_pressOval)
             self.canvasTab[self.notebook.index(self.notebook.select())].bind("<ButtonRelease-1>", self.on_button_release)
@@ -71,8 +72,7 @@ class Graph():
             self.y = self.y + 1
         else:
             for i in range(len(self.tabCoordNodes[0])):
-                if self.tabCoordNodes[0][i] + 20 > event.x and self.tabCoordNodes[0][i] - 20 < event.x and self.tabCoordNodes[1][
-                    i] + 20 > event.y and self.tabCoordNodes[1][i] - 20 < event.y:
+                if self.tabCoordNodes[0][i] + 20 > event.x and self.tabCoordNodes[0][i] - 20 < event.x and self.tabCoordNodes[1][i] + 20 > event.y and self.tabCoordNodes[1][i] - 20 < event.y:
                     h = 1
             if h == 0:
                 self.canvasTab[self.notebook.index(self.notebook.select())].create_oval(event.x - 20, event.y - 20, event.x + 20, event.y + 20,
@@ -118,8 +118,58 @@ class Graph():
                 # tabCoordEdges[1].append(event.y))
                 self.canvasTab[self.notebook.index(self.notebook.select())].bind("<ButtonPress-1>", self.on_button_releaseTrait)
 
-    def actionDijkstra(self):
-        messagebox.showinfo("Title", nx.dijkstra_path(self.graph, 1, 4))
+    def on_button_pressTraitWeight(self, event):
+        for i in range(len(self.tabCoordNodes[0])):
+            if self.tabCoordNodes[0][i] + 20 > event.x and self.tabCoordNodes[0][i] - 20 < event.x and self.tabCoordNodes[1][i] + 20 > event.y and self.tabCoordNodes[1][i] - 20 < event.y:
+                # save mouse drag start position
+
+                self.start_x = event.x
+                self.start_y = event.y
+                self.premierNode = i + 1
+                self.tabNodesEdges[self.z].append(self.premierNode)
+                self.z = self.z + 1
+
+                # tabCoordEdges[0].append(event.x)
+                # tabCoordEdges[1].append(event.y)
+                self.canvas.bind("<ButtonPress-1>", self.on_button_releaseTraitWeight)
+
+    def on_button_releaseTraitWeight(self, event):
+        #tabCoordEdges[0].append(event.x)
+        #tabCoordEdges[1].append(event.y)
+        for i in range(len(self.tabCoordNodes[0])):
+            if self.tabCoordNodes[0][i]+20 > event.x and self.tabCoordNodes[0][i]-20 < event.x and self.tabCoordNodes[1][i]+20 > event.y and self.tabCoordNodes[1][i]-20 < event.y:
+                if self.start_x +40 > event.x and self.start_x -40 < event.x and self.start_y +40 > event.y and self.start_y -40 < event.y :
+                    pass
+                else:
+                    self.ligne = self.canvas.create_line(self.start_x, self.start_y, event.x, event.y)
+                    self.canvas.bind("<ButtonPress-1>", self.on_button_pressTraitWeight)
+                    self.derniereNode = i+1
+                    #print(self.premierNode)
+                    #print(self.derniereNode)
+                    self.graph.add_edge(self.premierNode,self.derniereNode, weight=-4)
+                    self.tabNodesEdges[self.z].append(self.derniereNode)
+                    self.z=self.z-1
+
+    def ActionShortest_Path(self):
+        try:
+            p = nx.shortest_path(self.graph, 1, 4)
+            messagebox.showinfo("Chemin le plus court", p)
+        except:
+            messagebox.showinfo("Chemin le plus court", "Pas de chemin entre ... et ...")
+
+    def ActionDijkstra(self):
+        try:
+            p = nx.dijkstra_path(self.graph, 1, 4)
+            messagebox.showinfo("dijkstra", p)
+        except:
+            messagebox.showinfo("dijkstra", "Pas de Path entre ... et ...")
+
+    def ActionBellman_Ford(self):
+        try:
+            pred, dist = nx.bellman_ford_predecessor_and_distance(self.graph, 1)
+            messagebox.showinfo("Bellman_Ford", 'Predécédents : ' + str(pred) + ' Distances : ' + str(dist))
+        except:
+            messagebox.showinfo("Bellman_Ford", "Mauvaise source ou cycle poids négatif")
 
 
 class App():
@@ -170,14 +220,14 @@ class App():
         self.canvasTab.append(canvas)
         self.graph = Graph(self.canvasTab, self.notebook)
 
-    def delete_tab(self):
+    def delete_tab(self):  # ne marche pas.
         self.notebook.forget(self.notebook.select())
 
     def start_generating(self):
         self.tabs['ky'] += 1
         self.add_tab()
 
-    def menu_button_graph(self):
+    def menu_button_graph(self):  # Creation des boutons pour points et arêtes
         canvas_button = Canvas(self.root, width=self.root.winfo_width(), height=25)
         canvas_button.pack(fill=X)
         canvas_button2 = Canvas(self.root, width=self.root.winfo_width(), height=25)
@@ -217,9 +267,9 @@ class App():
 
         Menu4 = Menu(Menubar, tearoff=0)
 
-        Menu4.add_command(label="Bellman")
-        Menu4.add_command(label="Ford")
-        Menu4.add_command(label="Dijkstra")
+        Menu4.add_command(label="Shortest path", command=self.graph.ActionShortest_Path)
+        Menu4.add_command(label="Dijkstra", command=self.graph.ActionDijkstra)
+        Menu4.add_command(label="Bellman", command=self.graph.ActionBellman_Ford)
         Menu4.add_separator()
         Menu4.add_command(label="Matrice")
 
