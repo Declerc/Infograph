@@ -36,6 +36,8 @@ class App:
         self.derniereNode = None
         self.ligne = None
         self.x = self.y = 0
+        self.tabPrim = []
+        self.debut = 1
 
 
     def CreationMenu(self, Fenetre):
@@ -63,8 +65,9 @@ class App:
         Menu4 = Menu(Menubar, tearoff=0)
 
         Menu4.add_command(label="Shortest Path", command=self.ActionShortest_Path)
-        Menu4.add_command(label="Dijkstra", command=self.FenetreDijkstra)
+        Menu4.add_command(label="Dijkstra", command=self.ActionDijkstra)
         Menu4.add_command(label="Bellman", command=self.ActionBellman_Ford)
+        Menu4.add_command(label="Prim", command=self.ActionPrim)
         Menu4.add_separator()
         Menu4.add_command(label="Matrice")
 
@@ -136,12 +139,30 @@ class App:
         pass
     
     
-    
-    
-
-    def on_button_releaseTrait(self, event):
-        global z
+    def oui(self,premierNode,derniereNode,tabPrim):
+        try:
+            tabPrim[premierNode-1][derniereNode-1]=4
+        except:
+            try:
+                tabPrim[premierNode-1].append(0)
+                self.oui(premierNode,derniereNode,tabPrim)
+            except:
+                tabPrim.append([])
+                self.oui(premierNode,derniereNode,tabPrim)
+        try:
+            tabPrim[derniereNode-1][premierNode-1]=4
+            return tabPrim
+        except:
+            try:
+                tabPrim[derniereNode-1].append(0)
+                self.oui(premierNode,derniereNode,tabPrim)
+            except:
+                tabPrim.append([])
+                self.oui(premierNode,derniereNode,tabPrim)
+        #print(tabPrim)
         
+        
+    def on_button_releaseTrait(self, event):
         #tabCoordEdges[0].append(event.x)
         #tabCoordEdges[1].append(event.y)
         for i in range(len(tabCoordNodes[0])):
@@ -155,11 +176,9 @@ class App:
                     #print(self.premierNode)
                     #print(self.derniereNode)
                     graph.add_edge(self.premierNode,self.derniereNode)
-                    tabNodesEdges[z].append(self.derniereNode)
-                    z=z-1
+                    tabNodesEdges[1].append(self.derniereNode)
                     
     def on_button_releaseTraitWeight(self, event):
-        global z
         #tabCoordEdges[0].append(event.x)
         #tabCoordEdges[1].append(event.y)
         for i in range(len(tabCoordNodes[0])):
@@ -172,12 +191,33 @@ class App:
                     self.derniereNode = i+1
                     #print(self.premierNode)
                     #print(self.derniereNode)
-                    graph.add_edge(self.premierNode,self.derniereNode, weight=-4)
-                    tabNodesEdges[z].append(self.derniereNode)
-                    z=z-1
+                    
+                    def RecupData():
+                        self.debut = entr1.get()
+                        fen1.destroy()
+                        graph.add_edge(self.premierNode,self.derniereNode, weight=int(self.debut))
+                        pprint(tabNodesEdges);
+                    
+                    fen1 = Tk()
+                    fen1.geometry("350x160")
+                    fen1.title('Algorithme de dijkstra')
+                    
+                    consigne = Label(fen1, text='Renseigné les 2 champs suivants avec des entiers :')
+                    txt1 = Label(fen1, text='Noeud de départ :')
+                    entr1 = Entry(fen1)
+                    button = Button(fen1, text='submit', command=RecupData)
+                    
+                    consigne.grid(row=0, columnspan=2,pady=15, padx=20)
+                    txt1.grid(row=1)
+                    entr1.grid(row=1, column=1)
+                    
+                    button.grid(row=3,columnspan=3, pady=15)
+                    self.oui(self.premierNode,self.derniereNode,self.tabPrim)
+                    graph.add_edge(self.premierNode,self.derniereNode, weight=self.debut)
+                    print(self.debut)
+                    tabNodesEdges[1].append(self.derniereNode)
     
     def on_button_pressTrait(self, event):
-        global z
         for i in range(len(tabCoordNodes[0])):
             if tabCoordNodes[0][i]+20 > event.x and tabCoordNodes[0][i]-20 < event.x and tabCoordNodes[1][i]+20 > event.y and tabCoordNodes[1][i]-20 < event.y:
             # save mouse drag start position
@@ -185,8 +225,7 @@ class App:
                 self.start_x = event.x
                 self.start_y = event.y
                 self.premierNode = i+1
-                tabNodesEdges[z].append(self.premierNode)
-                z=z+1
+                tabNodesEdges[0].append(self.premierNode)
                 
                 
                 #tabCoordEdges[0].append(event.x)
@@ -194,7 +233,6 @@ class App:
                 self.canvas.bind("<ButtonPress-1>", self.on_button_releaseTrait)
                 
     def on_button_pressTraitWeight(self, event):
-        global z
         for i in range(len(tabCoordNodes[0])):
             if tabCoordNodes[0][i]+20 > event.x and tabCoordNodes[0][i]-20 < event.x and tabCoordNodes[1][i]+20 > event.y and tabCoordNodes[1][i]-20 < event.y:
             # save mouse drag start position
@@ -202,8 +240,7 @@ class App:
                 self.start_x = event.x
                 self.start_y = event.y
                 self.premierNode = i+1
-                tabNodesEdges[z].append(self.premierNode)
-                z=z+1
+                tabNodesEdges[0].append(self.premierNode)
                 
                 
                 #tabCoordEdges[0].append(event.x)
@@ -218,42 +255,14 @@ class App:
         except:
             messagebox.showinfo("Chemin le plus court", "Pas de chemin entre ... et ...")
             
-    def ActionDijkstra(self,debut,fin):
+    def ActionDijkstra(self):
         global graph
         try:
-            
-            p=nx.dijkstra_path(graph,int(debut),int(fin))
+            p=nx.dijkstra_path(graph,1,4)
             messagebox.showinfo("dijkstra",p)
         except:
             messagebox.showinfo("dijkstra", "Pas de Path entre ... et ...")
-    def FenetreDijkstra(self):  
-        def RecupData():
-            debut = entr1.get() 
-            fin = entr2.get()
-            fen1.destroy()
-            self.ActionDijkstra(debut,fin) 
-        fen1 = Tk()
-        fen1.geometry("350x160")
-        fen1.title('Algorithme de dijkstra')
-        
-        consigne = Label(fen1, text='Renseigné les 2 champs suivants avec des entiers :')
-        txt1 = Label(fen1, text='Noeud de départ :')
-        txt2 = Label(fen1, text='Noeud  d\'arrivée  :')
-        entr1 = Entry(fen1)
-        entr2 = Entry(fen1)
-        button = Button(fen1, text='submit', command=RecupData)
-        
-        consigne.grid(row=0, columnspan=2,pady=15, padx=20)
-        txt1.grid(row=1)
-        txt2.grid(row=2)
-        entr1.grid(row=1, column=1)
-        entr2.grid(row=2, column=1,pady=3)
-        
-        button.grid(row=3,columnspan=3, pady=15) 
-        
-        
             
-        
     def ActionBellman_Ford(self):
         global graph
         try:
@@ -261,12 +270,50 @@ class App:
             messagebox.showinfo("Bellman_Ford",'Predécédents : '+str(pred)+' Distances : '+str(dist))    
         except:
             messagebox.showinfo("Bellman_Ford", "Mauvaise source ou cycle poids négatif")
-        
-    
-        
-        
-    
-    
+    def ActionPrim(self):
+        T = []
+        n = len(self.tabPrim)
+        self.tabPrim[n-1].append(0)
+        print(self.tabPrim)
+        plusProche = []
+        distanceMin = []
+     
+        for i in range(0,n):
+          plusProche.append(0)
+          distanceMin.append(0)
+     
+        for i in range(1,n):
+          plusProche[i] = 0
+          distanceMin[i] = self.tabPrim[i][0]
+     
+        for i in range(0,n-1):
+          min = None
+          for j in range(1,n):
+            if ((min and distanceMin[j] and 0 <= distanceMin[j] < min) or (not min and distanceMin[j] is not None and 0 <= distanceMin[j])):
+              min = distanceMin[j]
+              k = j
+     
+          T.append((k, plusProche[k]))
+          print(T)
+     
+          distanceMin[k] = -1
+          distanceMin[plusProche[k]] = -1
+     
+          for j in range(1,n):
+            if ((distanceMin[j] and self.tabPrim[k][j] and self.tabPrim[k][j] < distanceMin[j]) or not distanceMin[j] ):
+              distanceMin[j] = self.tabPrim[k][j]
+              distanceMin[k] = self.tabPrim[j][k]
+     
+              plusProche[j] = k
+              plusProche[k] = j
+     
+        return T 
+        # try:
+              
+        #except:
+         #   messagebox.showinfo("Prim", "Mauvaise source ou cycle poids négatif")
+          
+
 
         
         
@@ -277,7 +324,6 @@ tabCoordNodes= [[],[]]
 #tabCoordEdges= [[],[]]
 tabNodesEdges = [[],[]]
 y=1
-z=0
 graph = nx.Graph()
 app = App(1000, 1200)
 app.RunFenetre()
