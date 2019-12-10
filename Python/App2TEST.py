@@ -48,9 +48,13 @@ class Graph():  # Classe des graphes
         self.y = 1
         self.canvasTab = canvasTableau
         self.notebook = parentNotebook
+        self.debut = 1
+        self.tabPrim = []
+
+
 
     def create_point(self):
-        print(self.canvasTab[self.notebook.index(self.notebook.select())])
+        #print(self.canvasTab[self.notebook.index(self.notebook.select())])
         try:
             self.canvasTab[self.notebook.index(self.notebook.select())].bind("<ButtonPress-1>", self.on_button_pressOval)
             self.canvasTab[self.notebook.index(self.notebook.select())].bind("<ButtonRelease-1>", self.on_button_release)
@@ -60,6 +64,9 @@ class Graph():  # Classe des graphes
     def createTrait(self):
         self.canvasTab[self.notebook.index(self.notebook.select())].bind("<ButtonPress-1>", self.on_button_pressTrait)
 
+    def createTraitWeight(self):
+        self.canvasTab[self.notebook.index(self.notebook.select())].bind("<ButtonPress-1>", self.on_button_pressTraitWeight)
+
     def on_button_pressOval(self, event):
         # save mouse drag start position
         h = 0
@@ -68,7 +75,8 @@ class Graph():  # Classe des graphes
                                                                                     fill="blue", outline="#DDD", width=4)
             self.tabCoordNodes[0].append(event.x)
             self.tabCoordNodes[1].append(event.y)
-            self.graph.add_node(self.y)
+            self.graph.add_node(self.y - 1)
+            self.canvasTab[self.notebook.index(self.notebook.select())].create_text(event.x, event.y, text=self.y-1, fill="lightgreen")
             self.y = self.y + 1
         else:
             for i in range(len(self.tabCoordNodes[0])):
@@ -79,7 +87,8 @@ class Graph():  # Classe des graphes
                                                                                         fill="blue", outline="#DDD", width=4)
                 self.tabCoordNodes[0].append(event.x)
                 self.tabCoordNodes[1].append(event.y)
-                self.graph.add_node(self.y)
+                self.graph.add_node(self.y - 1)
+                self.canvasTab[self.notebook.index(self.notebook.select())].create_text(event.x, event.y, text=self.y - 1, fill="lightgreen")
                 self.y = self.y + 1
 
     def on_button_release(self, event):
@@ -96,10 +105,8 @@ class Graph():  # Classe des graphes
                     self.ligne = self.canvasTab[self.notebook.index(self.notebook.select())].create_line(self.start_x, self.start_y, event.x, event.y)
                     self.canvasTab[self.notebook.index(self.notebook.select())].bind("<ButtonPress-1>", self.on_button_pressTrait)
                     self.derniereNode = i + 1
-                    self.graph.add_edge(self.premierNode, self.derniereNode)
-                    self.tabNodesEdges[self.z].append(self.derniereNode)
-                    print(self.z)
-                    self.z = self.z - 1
+                    self.graph.add_edge(self.premierNode - 1, self.derniereNode - 1)
+                    self.tabNodesEdges[1].append(self.derniereNode - 1)
 
     def on_button_pressTrait(self, event):
         for i in range(len(self.tabCoordNodes[0])):
@@ -109,10 +116,8 @@ class Graph():  # Classe des graphes
                 self.start_x = event.x
                 self.start_y = event.y
                 self.premierNode = i + 1
-                self.tabNodesEdges[self.z].append(self.premierNode)
+                self.tabNodesEdges[0].append(self.premierNode - 1)
                 print(self.premierNode)
-                print(self.z)
-                self.z = self.z + 1
 
                 # tabCoordEdges[0].append(event.x)
                 # tabCoordEdges[1].append(event.y))
@@ -126,12 +131,11 @@ class Graph():  # Classe des graphes
                 self.start_x = event.x
                 self.start_y = event.y
                 self.premierNode = i + 1
-                self.tabNodesEdges[self.z].append(self.premierNode)
-                self.z = self.z + 1
+                self.tabNodesEdges[0].append(self.premierNode - 1)
 
                 # tabCoordEdges[0].append(event.x)
                 # tabCoordEdges[1].append(event.y)
-                self.canvas.bind("<ButtonPress-1>", self.on_button_releaseTraitWeight)
+                self.canvasTab[self.notebook.index(self.notebook.select())].bind("<ButtonPress-1>", self.on_button_releaseTraitWeight)
 
     def on_button_releaseTraitWeight(self, event):
         #tabCoordEdges[0].append(event.x)
@@ -141,14 +145,59 @@ class Graph():  # Classe des graphes
                 if self.start_x +40 > event.x and self.start_x -40 < event.x and self.start_y +40 > event.y and self.start_y -40 < event.y :
                     pass
                 else:
-                    self.ligne = self.canvas.create_line(self.start_x, self.start_y, event.x, event.y)
-                    self.canvas.bind("<ButtonPress-1>", self.on_button_pressTraitWeight)
+                    self.ligne = self.canvasTab[self.notebook.index(self.notebook.select())].create_line(self.start_x, self.start_y, event.x, event.y)
+                    self.canvasTab[self.notebook.index(self.notebook.select())].bind("<ButtonPress-1>", self.on_button_pressTraitWeight)
                     self.derniereNode = i+1
-                    #print(self.premierNode)
-                    #print(self.derniereNode)
-                    self.graph.add_edge(self.premierNode,self.derniereNode, weight=-4)
-                    self.tabNodesEdges[self.z].append(self.derniereNode)
-                    self.z=self.z-1
+
+                    def RecupData():
+                        self.debut = entr1.get()
+                        self.graph.add_edge(self.premierNode - 1, self.derniereNode - 1, weight=int(self.debut))
+                        self.oui(self.premierNode - 1, self.derniereNode - 1, self.tabPrim)
+                        fen1.destroy()
+
+                    fen1 = Tk()
+                    fen1.geometry("350x160")
+                    fen1.title('Algorithme de dijkstra')
+
+                    consigne = Label(fen1, text='Renseignez les 2 champs suivants avec des entiers :')
+                    txt1 = Label(fen1, text='Noeud de départ :')
+                    entr1 = Entry(fen1)
+                    button = Button(fen1, text='submit', command=RecupData)
+
+                    consigne.grid(row=0, columnspan=2, pady=15, padx=20)
+                    txt1.grid(row=1)
+                    entr1.grid(row=1, column=1)
+
+                    button.grid(row=3, columnspan=3, pady=15)
+                    # self.oui(self.premierNode-1,self.derniereNode-1,self.tabPrim)
+                    # graph.add_edge(self.premierNode-1,self.derniereNode-1, weight=self.debut)
+                    self.tabNodesEdges[1].append(self.derniereNode - 1)
+
+    def oui(self, premierNode, derniereNode, tabPrim):
+
+        # print(premierNode)
+        # print(derniereNode)
+        print(self.debut)
+        try:
+            tabPrim[premierNode][derniereNode] = int(self.debut)
+        except:
+            try:
+                tabPrim[premierNode].append(0)
+                self.oui(premierNode, derniereNode, tabPrim)
+            except:
+                tabPrim.append([])
+                self.oui(premierNode, derniereNode, tabPrim)
+        try:
+            tabPrim[derniereNode][premierNode] = int(self.debut)
+            return tabPrim
+        except:
+            try:
+                tabPrim[derniereNode].append(0)
+                self.oui(premierNode, derniereNode, tabPrim)
+            except:
+                tabPrim.append([])
+                self.oui(premierNode, derniereNode, tabPrim)
+        # print(tabPrim)
 
     def ActionShortest_Path(self):
         try:
@@ -157,12 +206,39 @@ class Graph():  # Classe des graphes
         except:
             messagebox.showinfo("Chemin le plus court", "Pas de chemin entre ... et ...")
 
-    def ActionDijkstra(self):
+    def ActionDijkstra(self, debut, fin):
         try:
-            p = nx.dijkstra_path(self.graph, 1, 4)
+
+            p = nx.dijkstra_path(self.graph, int(debut), int(fin))
             messagebox.showinfo("dijkstra", p)
         except:
             messagebox.showinfo("dijkstra", "Pas de Path entre ... et ...")
+
+    def FenetreDijkstra(self):
+        def RecupData():
+            debut = entr1.get()
+            fin = entr2.get()
+            fen1.destroy()
+            self.ActionDijkstra(debut, fin)
+
+        fen1 = Tk()
+        fen1.geometry("350x160")
+        fen1.title('Algorithme de dijkstra')
+
+        consigne = Label(fen1, text='Renseigné les 2 champs suivants avec des entiers :')
+        txt1 = Label(fen1, text='Noeud de départ :')
+        txt2 = Label(fen1, text='Noeud  d\'arrivée  :')
+        entr1 = Entry(fen1)
+        entr2 = Entry(fen1)
+        button = Button(fen1, text='submit', command=RecupData)
+
+        consigne.grid(row=0, columnspan=2, pady=15, padx=20)
+        txt1.grid(row=1)
+        txt2.grid(row=2)
+        entr1.grid(row=1, column=1)
+        entr2.grid(row=2, column=1, pady=3)
+
+        button.grid(row=3, columnspan=3, pady=15)
 
     def ActionBellman_Ford(self):
         try:
@@ -171,6 +247,53 @@ class Graph():  # Classe des graphes
         except:
             messagebox.showinfo("Bellman_Ford", "Mauvaise source ou cycle poids négatif")
 
+    def ActionPrim(self):
+        ok = self.graph.number_of_nodes()
+        print(ok)
+        print(self.tabPrim)
+        for j in range(0, ok):
+            if len(self.tabPrim[j]) == self.graph.number_of_nodes():
+                pass
+            else:
+                self.tabPrim[j].append(0)
+        T = []
+        n = len(self.tabPrim)
+        # self.tabPrim[n-1].append(0)
+        print(self.tabPrim)
+        plusProche = []
+        distanceMin = []
+
+        for i in range(0, n):
+            plusProche.append(0)
+            distanceMin.append(0)
+
+        for i in range(1, n):
+            plusProche[i] = 0
+            distanceMin[i] = self.tabPrim[i][0]
+
+        for i in range(0, n - 1):
+            min = None
+            for j in range(1, n):
+                if ((min and distanceMin[j] and 0 <= distanceMin[j] < min) or (
+                        not min and distanceMin[j] is not None and 0 <= distanceMin[j])):
+                    min = distanceMin[j]
+                    k = j
+
+            T.append((k, plusProche[k]))
+            print(T)
+
+            distanceMin[k] = -1
+            distanceMin[plusProche[k]] = -1
+
+            for j in range(1, n):
+                if ((distanceMin[j] and self.tabPrim[k][j] and self.tabPrim[k][j] < distanceMin[j]) or not distanceMin[j]):
+                    distanceMin[j] = self.tabPrim[k][j]
+                    distanceMin[k] = self.tabPrim[j][k]
+
+                    plusProche[j] = k
+                    plusProche[k] = j
+
+        return T
 
 class App():
     @property  # Getter Setter
@@ -208,8 +331,6 @@ class App():
         self.notebook.pack(expand=1, fill="both")
         self.add_tab()
 
-
-
     def add_tab(self):
         tab = MyTab(self.notebook)
         self.notebook.add(tab)  # Add tab to the notebook
@@ -220,8 +341,14 @@ class App():
         self.canvasTab.append(canvas)
         self.graph = Graph(self.canvasTab, self.notebook)
 
-    def delete_tab(self):  # ne marche pas.
+        #print(self.notebook.tabs())
+        #print(self.notebook.tab(tab))
+        #print(self.notebook.winfo_children())
+
+    def delete_tab(self):  #marche mais rend impossible la création de graphes sur les tabs créées après
         self.notebook.forget(self.notebook.select())
+        #self.notebook.select().destroy()
+        self.tabs['ky'] -= 1
 
     def start_generating(self):
         self.tabs['ky'] += 1
@@ -230,15 +357,9 @@ class App():
     def menu_button_graph(self):  # Creation des boutons pour points et arêtes
         canvas_button = Canvas(self.root, width=self.root.winfo_width(), height=25)
         canvas_button.pack(fill=X)
-        canvas_button2 = Canvas(self.root, width=self.root.winfo_width(), height=25)
-        canvas_button2.pack(fill=X)
         self.buttonPoint = Button(canvas_button, command=self.graph.create_point, width=3).place(x=5, y=2)
-        self.buttonTrait = Button(canvas_button2, command=self.graph.createTrait, width=5).place(x=15, y=2)
-
-
-    #def on_button_press(self, event):  #récupère les positions de la souris au click et dessine un point
-        #self.canvasTab[self.notebook.index(self.notebook.select())].create_oval(event.x - 20, event.y - 20, event.x + 20, event.y + 20,
-                                                                     #fill="blue", outline="#DDD", width=4)
+        self.buttonTrait = Button(canvas_button, command=self.graph.createTrait, width=3).place(x=55, y=2)
+        self.buttonTraitWeight = Button(canvas_button, command=self.graph.createTraitWeight, width=3).place(x=105, y=2)
 
     def on_button_release(self, event):
         pass
@@ -268,8 +389,9 @@ class App():
         Menu4 = Menu(Menubar, tearoff=0)
 
         Menu4.add_command(label="Shortest path", command=self.graph.ActionShortest_Path)
-        Menu4.add_command(label="Dijkstra", command=self.graph.ActionDijkstra)
+        Menu4.add_command(label="Dijkstra", command=self.graph.FenetreDijkstra)
         Menu4.add_command(label="Bellman", command=self.graph.ActionBellman_Ford)
+        Menu4.add_command(label="Prim", command=self.graph.ActionPrim)
         Menu4.add_separator()
         Menu4.add_command(label="Matrice")
 
