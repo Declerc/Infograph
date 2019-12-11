@@ -1,12 +1,12 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+from PIL import Image, ImageTk
 import networkx as nx
 from pprint import pprint
 
 
-
-class MyTab(Frame): # Classe qui gère les Tabs
+class MyTab(Frame):  # Classe qui gère les Tabs
 
     def __init__(self, root):
         Frame.__init__(self, root)
@@ -14,23 +14,23 @@ class MyTab(Frame): # Classe qui gère les Tabs
 
 
 # a subclass of Canvas for dealing with resizing of windows
-class ResizingCanvas(Canvas): # Classe des canvas des tabs
-    def __init__(self,parent,**kwargs):
-        Canvas.__init__(self,parent,**kwargs)
+class ResizingCanvas(Canvas):  # Classe des canvas des tabs
+    def __init__(self, parent, **kwargs):
+        Canvas.__init__(self, parent, **kwargs)
         self.bind("<Configure>", self.on_resize)
         self.height = self.winfo_reqheight()
         self.width = self.winfo_reqwidth()
 
-    def on_resize(self,event):
+    def on_resize(self, event):
         # determine the ratio of old width/height to new width/height
-        #wscale = float(event.width)/self.width
-        #hscale = float(event.height)/self.height
+        # wscale = float(event.width)/self.width
+        # hscale = float(event.height)/self.height
         self.width = event.width
         self.height = event.height
         # resize the canvas
         self.config(width=self.width, height=self.height)
         # rescale all the objects tagged with the "all" tag
-        #self.scale("all",0,0,wscale,hscale)
+        # self.scale("all",0,0,wscale,hscale)
 
 
 class Graph():  # Classe des graphes
@@ -141,8 +141,9 @@ class Graph():  # Classe des graphes
         #tabCoordEdges[0].append(event.x)
         #tabCoordEdges[1].append(event.y)
         for i in range(len(self.tabCoordNodes[0])):
-            if self.tabCoordNodes[0][i]+20 > event.x and self.tabCoordNodes[0][i]-20 < event.x and self.tabCoordNodes[1][i]+20 > event.y and self.tabCoordNodes[1][i]-20 < event.y:
-                if self.start_x +40 > event.x and self.start_x -40 < event.x and self.start_y +40 > event.y and self.start_y -40 < event.y :
+            if self.tabCoordNodes[0][i] + 20 > event.x and self.tabCoordNodes[0][i] - 20 < event.x and \
+                    self.tabCoordNodes[1][i] + 20 > event.y and self.tabCoordNodes[1][i] - 20 < event.y:
+                if self.start_x + 40 > event.x and self.start_x - 40 < event.x and self.start_y + 40 > event.y and self.start_y - 40 < event.y:
                     pass
                 else:
                     self.ligne = self.canvasTab[self.notebook.index(self.notebook.select())].create_line(self.start_x, self.start_y, event.x, event.y)
@@ -152,15 +153,15 @@ class Graph():  # Classe des graphes
                     def RecupData():
                         self.debut = entr1.get()
                         self.graph.add_edge(self.premierNode - 1, self.derniereNode - 1, weight=int(self.debut))
-                        self.oui(self.premierNode - 1, self.derniereNode - 1, self.tabPrim)
+                        self.creationTabPrim(self.premierNode - 1, self.derniereNode - 1, self.tabPrim)
                         fen1.destroy()
 
                     fen1 = Tk()
                     fen1.geometry("350x160")
-                    fen1.title('Algorithme de dijkstra')
+                    fen1.title('Poids de l\'arc')
 
-                    consigne = Label(fen1, text='Renseignez les 2 champs suivants avec des entiers :')
-                    txt1 = Label(fen1, text='Noeud de départ :')
+                    consigne = Label(fen1, text='Renseignez le champ suivant avec un entier :')
+                    txt1 = Label(fen1, text='Poid :')
                     entr1 = Entry(fen1)
                     button = Button(fen1, text='submit', command=RecupData)
 
@@ -169,11 +170,11 @@ class Graph():  # Classe des graphes
                     entr1.grid(row=1, column=1)
 
                     button.grid(row=3, columnspan=3, pady=15)
-                    # self.oui(self.premierNode-1,self.derniereNode-1,self.tabPrim)
+                    # self.creationTabPrim(self.premierNode-1,self.derniereNode-1,self.tabPrim)
                     # graph.add_edge(self.premierNode-1,self.derniereNode-1, weight=self.debut)
                     self.tabNodesEdges[1].append(self.derniereNode - 1)
 
-    def oui(self, premierNode, derniereNode, tabPrim):
+    def creationTabPrim(self, premierNode, derniereNode, tabPrim):
 
         # print(premierNode)
         # print(derniereNode)
@@ -183,20 +184,20 @@ class Graph():  # Classe des graphes
         except:
             try:
                 tabPrim[premierNode].append(0)
-                self.oui(premierNode, derniereNode, tabPrim)
+                self.creationTabPrim(premierNode, derniereNode, tabPrim)
             except:
                 tabPrim.append([])
-                self.oui(premierNode, derniereNode, tabPrim)
+                self.creationTabPrim(premierNode, derniereNode, tabPrim)
         try:
             tabPrim[derniereNode][premierNode] = int(self.debut)
             return tabPrim
         except:
             try:
                 tabPrim[derniereNode].append(0)
-                self.oui(premierNode, derniereNode, tabPrim)
+                self.creationTabPrim(premierNode, derniereNode, tabPrim)
             except:
                 tabPrim.append([])
-                self.oui(premierNode, derniereNode, tabPrim)
+                self.creationTabPrim(premierNode, derniereNode, tabPrim)
         # print(tabPrim)
 
     def ActionShortest_Path(self):
@@ -225,7 +226,7 @@ class Graph():  # Classe des graphes
         fen1.geometry("350x160")
         fen1.title('Algorithme de dijkstra')
 
-        consigne = Label(fen1, text='Renseigné les 2 champs suivants avec des entiers :')
+        consigne = Label(fen1, text='Renseignez les 2 champs suivants avec des entiers :')
         txt1 = Label(fen1, text='Noeud de départ :')
         txt2 = Label(fen1, text='Noeud  d\'arrivée  :')
         entr1 = Entry(fen1)
@@ -240,9 +241,28 @@ class Graph():  # Classe des graphes
 
         button.grid(row=3, columnspan=3, pady=15)
 
-    def ActionBellman_Ford(self):
+    def FenetreBellman(self):
+        def RecupData():
+            source = entr1.get()
+            fen1.destroy()
+            self.ActionBellman_Ford(source)
+
+        fen1 = Tk()
+        fen1.geometry("350x160")
+        fen1.title('Algorithme de bellman')
+
+        consigne = Label(fen1, text='Renseignez le champ suivant avec un entier :')
+        txt1 = Label(fen1, text='Noeud de départ :')
+        entr1 = Entry(fen1)
+        button = Button(fen1, text='submit', command=RecupData)
+        consigne.grid(row=0, columnspan=2, pady=15, padx=20)
+        txt1.grid(row=1)
+        entr1.grid(row=1, column=1)
+        button.grid(row=3, columnspan=3, pady=15)
+
+    def ActionBellman_Ford(self, source):
         try:
-            pred, dist = nx.bellman_ford_predecessor_and_distance(self.graph, 1)
+            pred, dist = nx.bellman_ford_predecessor_and_distance(self.graph, int(source))
             messagebox.showinfo("Bellman_Ford", 'Predécédents : ' + str(pred) + ' Distances : ' + str(dist))
         except:
             messagebox.showinfo("Bellman_Ford", "Mauvaise source ou cycle poids négatif")
@@ -252,9 +272,7 @@ class Graph():  # Classe des graphes
         print(ok)
         print(self.tabPrim)
         for j in range(0, ok):
-            if len(self.tabPrim[j]) == self.graph.number_of_nodes():
-                pass
-            else:
+            while (len(self.tabPrim[j]) != self.graph.number_of_nodes()):
                 self.tabPrim[j].append(0)
         T = []
         n = len(self.tabPrim)
@@ -280,7 +298,7 @@ class Graph():  # Classe des graphes
                     k = j
 
             T.append((k, plusProche[k]))
-            print(T)
+            # print(T)
 
             distanceMin[k] = -1
             distanceMin[plusProche[k]] = -1
@@ -293,7 +311,15 @@ class Graph():  # Classe des graphes
                     plusProche[j] = k
                     plusProche[k] = j
 
+        try:
+            message = "L\'arbre est \n"
+            for i in range(0, len(T)):
+                message += str(T[i][0]) + " relie a " + str(T[i][1]) + "\n"
+            messagebox.showinfo("Prim", message)
+        except:
+            messagebox.showinfo("Prim", "erreur")
         return T
+
 
 class App():
     @property  # Getter Setter
@@ -322,9 +348,9 @@ class App():
         self.root.geometry("{}x{}".format(self._width, self._height))
 
         self.root.update_idletasks()  # Permet que winfo_height et width ne soit pas égaux à 1.
-        self.canvas_fenetre = Canvas(self.root, width=self.root.winfo_width()*(3/4), height=self.root.winfo_height()).place(x= 0, y = 0)  # Canvas de toute la fenetre
-        self.canvas_console = Canvas(self.root, bg="black", width = self.root.winfo_height()*(1/4), height=self.root.winfo_height())  # Canvas console
-        self.canvas_console.pack(side=RIGHT, fill=Y)
+        self.canvas_fenetre = Canvas(self.root, width=self.root.winfo_width(), height=self.root.winfo_height()).place(x= 0, y = 0)  # Canvas de toute la fenetre
+        #self.canvas_console = Canvas(self.root, bg="black", width = self.root.winfo_height()*(1/4), height=self.root.winfo_height())  # Canvas console
+        #self.canvas_console.pack(side=RIGHT, fill=Y)
 
         self.canvasTab = []  # Tableau qui contient les canvas des Tabs
         self.notebook = ttk.Notebook(self.canvas_fenetre)
@@ -341,13 +367,10 @@ class App():
         self.canvasTab.append(canvas)
         self.graph = Graph(self.canvasTab, self.notebook)
 
-        #print(self.notebook.tabs())
-        #print(self.notebook.tab(tab))
-        #print(self.notebook.winfo_children())
 
-    def delete_tab(self):  #marche mais rend impossible la création de graphes sur les tabs créées après
+    def delete_tab(self):  # marche mais rend impossible la création de graphes sur les tabs créées après
         self.notebook.forget(self.notebook.select())
-        #self.notebook.select().destroy()
+        # self.notebook.select().destroy()
         self.tabs['ky'] -= 1
 
     def start_generating(self):
@@ -357,9 +380,9 @@ class App():
     def menu_button_graph(self):  # Creation des boutons pour points et arêtes
         canvas_button = Canvas(self.root, width=self.root.winfo_width(), height=25)
         canvas_button.pack(fill=X)
-        self.buttonPoint = Button(canvas_button, command=self.graph.create_point, width=3).place(x=5, y=2)
-        self.buttonTrait = Button(canvas_button, command=self.graph.createTrait, width=3).place(x=55, y=2)
-        self.buttonTraitWeight = Button(canvas_button, command=self.graph.createTraitWeight, width=3).place(x=105, y=2)
+        self.buttonPoint = Button(canvas_button, command=self.graph.create_point, text="sommet").place(x=5, y=2)
+        self.buttonTrait = Button(canvas_button, command=self.graph.createTrait, text="arete poids 1").place(x=105, y=2)
+        self.buttonTraitWeight = Button(canvas_button, command=self.graph.createTraitWeight, text="arete poids n").place(x=205, y=2)
 
     def on_button_release(self, event):
         pass
@@ -390,7 +413,7 @@ class App():
 
         Menu4.add_command(label="Shortest path", command=self.graph.ActionShortest_Path)
         Menu4.add_command(label="Dijkstra", command=self.graph.FenetreDijkstra)
-        Menu4.add_command(label="Bellman", command=self.graph.ActionBellman_Ford)
+        Menu4.add_command(label="Bellman", command=self.graph.FenetreBellman)
         Menu4.add_command(label="Prim", command=self.graph.ActionPrim)
         Menu4.add_separator()
         Menu4.add_command(label="Matrice")
