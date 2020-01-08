@@ -21,16 +21,11 @@ class ResizingCanvas(Canvas):  # Classe des canvas des tabs
         self.height = self.winfo_reqheight()
         self.width = self.winfo_reqwidth()
 
-    def on_resize(self, event):
-        # determine the ratio of old width/height to new width/height
-        # wscale = float(event.width)/self.width
-        # hscale = float(event.height)/self.height
+    def on_resize(self, event): #Fonction pour que le canvas se resize avec la fenetre
         self.width = event.width
         self.height = event.height
         # resize the canvas
         self.config(width=self.width, height=self.height)
-        # rescale all the objects tagged with the "all" tag
-        # self.scale("all",0,0,wscale,hscale)
 
 
 class Graph():  # Classe des graphes
@@ -322,7 +317,7 @@ class Graph():  # Classe des graphes
 
 
 class App():
-    @property  # Getter Setter
+    @property  # Getter Setter hauteur/largeur de la fenêtre
     def Width(self):
         return self._width
 
@@ -349,15 +344,12 @@ class App():
 
         self.root.update_idletasks()  # Permet que winfo_height et width ne soit pas égaux à 1.
         self.canvas_fenetre = Canvas(self.root, width=self.root.winfo_width(), height=self.root.winfo_height()).place(x= 0, y = 0)  # Canvas de toute la fenetre
-        #self.canvas_console = Canvas(self.root, bg="black", width = self.root.winfo_height()*(1/4), height=self.root.winfo_height())  # Canvas console
-        #self.canvas_console.pack(side=RIGHT, fill=Y)
-
         self.canvasTab = []  # Tableau qui contient les canvas des Tabs
         self.notebook = ttk.Notebook(self.canvas_fenetre)
         self.notebook.pack(expand=1, fill="both")
         self.add_tab()
 
-    def add_tab(self):
+    def add_tab(self): #Fonction pour création d’un onglet
         tab = MyTab(self.notebook)
         self.notebook.add(tab)  # Add tab to the notebook
         self.notebook.tab(tab, text=self.notebook.index(tab))  # Add title to the tab
@@ -365,7 +357,7 @@ class App():
         canvas = ResizingCanvas(tab, width=tab.winfo_width(), height=tab.winfo_height(), highlightthickness=0)
         canvas.pack(fill=BOTH, expand=YES)
         self.canvasTab.append(canvas)
-        self.graph = Graph(self.canvasTab, self.notebook)
+        self.graph = Graph(self.canvasTab, self.notebook) #On crée un objet graph quand on crée une tab
 
 
     def delete_tab(self):  # marche mais rend impossible la création de graphes sur les tabs créées après
@@ -387,7 +379,7 @@ class App():
     def on_button_release(self, event):
         pass
 
-    def creation_menu(self, fenetre):
+    def creation_menu(self, fenetre): #Fonction qui créée le menu en haut de la fenêtre
         Menubar = Menu(fenetre)
         Menu1 = Menu(Menubar, tearoff=0)
         Menu1.add_command(label="Créer", command=self.start_generating)
@@ -427,7 +419,7 @@ class App():
 
         fenetre.config(menu=Menubar)
 
-    def run(self):
+    def run(self): # fait tourner l’application
         self.creation_menu(self.root)
         self.menu_button_graph()
         self.root.mainloop()
