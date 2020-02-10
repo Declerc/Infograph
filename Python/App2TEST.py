@@ -45,6 +45,8 @@ class Graph():  # Classe des graphes
         self.notebook = parentNotebook
         self.debut = 1
         self.tabPrim = []
+        self.mes_points = []
+        self.mes_traits = []
 
 
 
@@ -55,7 +57,9 @@ class Graph():  # Classe des graphes
             self.canvasTab[self.notebook.index(self.notebook.select())].bind("<ButtonRelease-1>", self.on_button_release)
         except TclError:
             messagebox.showerror("Erreur Tab", "Vous devez créer une table pour dessiner un graphe : \nFichier > Créer")
-
+    def move_point(self):
+        #print(self.canvasTab[self.notebook.index(self.notebook.select())])
+        self.canvasTab[self.notebook.index(self.notebook.select())].bind("<ButtonPress-1>", self.bouge)
     def createTrait(self):
         self.canvasTab[self.notebook.index(self.notebook.select())].bind("<ButtonPress-1>", self.on_button_pressTrait)
 
@@ -66,29 +70,58 @@ class Graph():  # Classe des graphes
         # save mouse drag start position
         h = 0
         if self.y == 1:
-            self.canvasTab[self.notebook.index(self.notebook.select())].create_oval(event.x - 20, event.y - 20, event.x + 20, event.y + 20,
+            id= self.canvasTab[self.notebook.index(self.notebook.select())].create_oval(event.x - 20, event.y - 20, event.x + 20, event.y + 20,
                                                                                     fill="blue", outline="#DDD", width=4)
+            self.mes_points.append(id)
             self.tabCoordNodes[0].append(event.x)
             self.tabCoordNodes[1].append(event.y)
             self.graph.add_node(self.y - 1)
-            self.canvasTab[self.notebook.index(self.notebook.select())].create_text(event.x, event.y, text=self.y-1, fill="lightgreen")
+            id =self.canvasTab[self.notebook.index(self.notebook.select())].create_text(event.x, event.y, text=self.y-1, fill="lightgreen")
+            self.mes_points.append(id)
             self.y = self.y + 1
+            
         else:
             for i in range(len(self.tabCoordNodes[0])):
                 if self.tabCoordNodes[0][i] + 20 > event.x and self.tabCoordNodes[0][i] - 20 < event.x and self.tabCoordNodes[1][i] + 20 > event.y and self.tabCoordNodes[1][i] - 20 < event.y:
                     h = 1
             if h == 0:
-                self.canvasTab[self.notebook.index(self.notebook.select())].create_oval(event.x - 20, event.y - 20, event.x + 20, event.y + 20,
+                id =self.canvasTab[self.notebook.index(self.notebook.select())].create_oval(event.x - 20, event.y - 20, event.x + 20, event.y + 20,
                                                                                         fill="blue", outline="#DDD", width=4)
+                
+                self.mes_points.append(id)
                 self.tabCoordNodes[0].append(event.x)
                 self.tabCoordNodes[1].append(event.y)
                 self.graph.add_node(self.y - 1)
-                self.canvasTab[self.notebook.index(self.notebook.select())].create_text(event.x, event.y, text=self.y - 1, fill="lightgreen")
+                id =self.canvasTab[self.notebook.index(self.notebook.select())].create_text(event.x, event.y, text=self.y - 1, fill="lightgreen")
+                self.mes_points.append(id)
                 self.y = self.y + 1
-
+         ## Sauvegarde ID
     def on_button_release(self, event):
         pass
-
+    def bouge(self, event):
+        
+        self.xmove, self.ymove = event.x, event.y
+        self.closest = event.widget.find_closest(self.xmove, self.ymove) # Tuple
+        if(self.canvasTab[self.notebook.index(self.notebook.select())].gettags(self.closest[0])!=("ligne","trait")):
+            self.idtxt =self.closest[0]+1
+            #print(event.widget.coords(self.closest[0]))
+            for idtrait in self.mes_traits:
+                self.coordtrait = self.canvasTab[self.notebook.index(self.notebook.select())].coords(idtrait)
+                #print(self.coordtrait)
+                #print(self.tabCoordNodes)
+                if event.widget.coords(self.closest[0])[2] >= self.coordtrait[0] and event.widget.coords(self.closest[0])[0] <= self.coordtrait[0] and event.widget.coords(self.closest[0])[3] >= self.coordtrait[1] and event.widget.coords(self.closest[0])[1] <= self.coordtrait[1]:
+                    event.widget.coords(idtrait, self.xmove, self.ymove, self.coordtrait[2], self.coordtrait[3])
+                if event.widget.coords(self.closest[0])[2] >= self.coordtrait[2] and event.widget.coords(self.closest[0])[0] <= self.coordtrait[2] and event.widget.coords(self.closest[0])[3] >= self.coordtrait[3] and event.widget.coords(self.closest[0])[1] <= self.coordtrait[3]:
+                    event.widget.coords(idtrait, self.coordtrait[0], self.coordtrait[1], self.xmove, self.ymove)
+            #print()
+            #print(self.tabCoordNodes[0][1])
+            self.tabCoordNodes[0][int(self.canvasTab[self.notebook.index(self.notebook.select())].itemcget(self.idtxt, 'text'))]=event.x
+            #print(self.tabCoordNodes[0][self.y-2])
+            self.tabCoordNodes[1][int(self.canvasTab[self.notebook.index(self.notebook.select())].itemcget(self.idtxt, 'text'))]=event.y
+            # le canvas.coords(ID, x1,y1,x2,y2)
+            event.widget.coords(self.closest[0], self.xmove-20, self.ymove-20, self.xmove+20, self.ymove+20)
+            event.widget.coords(self.idtxt, self.xmove, self.ymove)
+            
     def on_button_releaseTrait(self, event):
         # tabCoordEdges[0].append(event.x)
         # tabCoordEdges[1].append(event.y)
@@ -97,7 +130,9 @@ class Graph():  # Classe des graphes
                 if self.start_x + 40 > event.x and self.start_x - 40 < event.x and self.start_y + 40 > event.y and self.start_y - 40 < event.y:
                     pass
                 else:
-                    self.ligne = self.canvasTab[self.notebook.index(self.notebook.select())].create_line(self.start_x, self.start_y, event.x, event.y)
+                    id = self.canvasTab[self.notebook.index(self.notebook.select())].create_line(self.start_x, self.start_y, event.x, event.y)
+                    self.mes_traits.append(id)
+                    self.canvasTab[self.notebook.index(self.notebook.select())].itemconfig(id, tags=("ligne","trait"))
                     self.canvasTab[self.notebook.index(self.notebook.select())].bind("<ButtonPress-1>", self.on_button_pressTrait)
                     self.derniereNode = i + 1
                     self.graph.add_edge(self.premierNode - 1, self.derniereNode - 1)
@@ -141,7 +176,8 @@ class Graph():  # Classe des graphes
                 if self.start_x + 40 > event.x and self.start_x - 40 < event.x and self.start_y + 40 > event.y and self.start_y - 40 < event.y:
                     pass
                 else:
-                    self.ligne = self.canvasTab[self.notebook.index(self.notebook.select())].create_line(self.start_x, self.start_y, event.x, event.y)
+                    id = self.canvasTab[self.notebook.index(self.notebook.select())].create_line(self.start_x, self.start_y, event.x, event.y)
+                    self.canvasTab[self.notebook.index(self.notebook.select())].itemconfig(id, tags=("ligne","trait"))
                     self.canvasTab[self.notebook.index(self.notebook.select())].bind("<ButtonPress-1>", self.on_button_pressTraitWeight)
                     self.derniereNode = i+1
 
@@ -375,6 +411,7 @@ class App():
         self.buttonPoint = Button(canvas_button, command=self.graph.create_point, text="sommet").place(x=5, y=2)
         self.buttonTrait = Button(canvas_button, command=self.graph.createTrait, text="arete poids 1").place(x=105, y=2)
         self.buttonTraitWeight = Button(canvas_button, command=self.graph.createTraitWeight, text="arete poids n").place(x=205, y=2)
+        self.buttonMove = Button(canvas_button, command=self.graph.move_point, text="bouge").place(x=305, y=2)
 
     def on_button_release(self, event):
         pass
